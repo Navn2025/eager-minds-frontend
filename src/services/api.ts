@@ -16,6 +16,7 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+// Global response interceptor to handle 401 Unauthorized errors
 
 api.interceptors.response.use(
   (response) => response,
