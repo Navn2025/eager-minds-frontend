@@ -1,0 +1,36 @@
+/* ===== MODERN FUTURISTIC OVERRIDES ===== */
+:root {
+  --navbar-height: 80px;
+}
+
+/* Reset any legacy page styles that conflict with Tailwind */
+.page {
+  padding: 0;
+  background: transparent;
+  min-height: auto;
+}
+
+/* Ensure all headings follow the theme if not handled by Tailwind */
+h1, h2, h3, h4, h5, h6 {
+  color: white;
+  letter-spacing: -0.02em;
+}
+
+/* Custom animations if needed */
+.hover-glow {
+  transition: all 0.3s ease;
+}
+.hover-glow:hover {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Legacy utility cleaning */
+/* Global styles */
+
+/* Grid background for pages */
+.page-container {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
