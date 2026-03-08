@@ -7,11 +7,9 @@ import {
   Shield,
   User as UserIcon,
   Search,
-  MoreVertical,
   Mail,
   Calendar,
 } from "lucide-react";
-import { Button } from "../../components/ui/Button";
 
 interface User {
   id: string;

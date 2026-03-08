@@ -84,12 +84,12 @@ export default function AdminEnquiries() {
                       <Mail size={14} />
                       {selected.email as string}
                     </span>
-                    {selected.phone && (
+                    {selected.phone ? (
                       <span className="flex items-center gap-1">
                         <Phone size={14} />
                         {selected.phone as string}
                       </span>
-                    )}
+                    ) : null}
                   </div>
                 </div>
                 <button
@@ -123,14 +123,14 @@ export default function AdminEnquiries() {
                 >
                   Reply via Email
                 </a>
-                {selected.phone && (
+                {selected.phone ? (
                   <a
                     href={`tel:${selected.phone as string}`}
                     className="px-4 py-2 bg-white/10 text-white rounded-lg text-sm font-medium hover:bg-white/20 transition-colors"
                   >
                     Call
                   </a>
-                )}
+                ) : null}
               </div>
             </div>
           ) : (

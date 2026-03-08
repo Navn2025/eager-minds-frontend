@@ -20,7 +20,9 @@ export default function TestimonialSection() {
     api
       .get("/testimonials")
       .then((res) => {
-        const data = Array.isArray(res.data) ? res.data : res.data.testimonials || [];
+        const data = Array.isArray(res.data)
+          ? res.data
+          : res.data.testimonials || [];
         setTestimonials(data);
       })
       .catch(() => setTestimonials([]));
@@ -34,7 +36,9 @@ export default function TestimonialSection() {
 
   const prev = useCallback(() => {
     if (testimonials.length > 0) {
-      setCurrent((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+      setCurrent(
+        (prev) => (prev - 1 + testimonials.length) % testimonials.length,
+      );
     }
   }, [testimonials.length]);
 
@@ -52,7 +56,7 @@ export default function TestimonialSection() {
     <section className="py-32 relative z-10 overflow-hidden">
       <div className="container mx-auto px-6 relative z-10">
         <div className="flex flex-col items-center text-center mb-20">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -65,7 +69,8 @@ export default function TestimonialSection() {
             Trusted by <span className="text-gradient">Elite Parents.</span>
           </h2>
           <p className="text-text-secondary text-lg font-medium leading-relaxed max-w-2xl uppercase tracking-wider">
-            Discover how our methodology has helped hundreds of bright young learners achieve their full academic and creative potential.
+            Discover how our methodology has helped hundreds of bright young
+            learners achieve their full academic and creative potential.
           </p>
         </div>
 
@@ -79,11 +84,18 @@ export default function TestimonialSection() {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="glass-card rounded-[3.5rem] p-12 md:p-20 text-center relative overflow-hidden"
             >
-              <Quote size={120} className="absolute top-10 left-10 text-accent opacity-5 -z-10" />
-              
+              <Quote
+                size={120}
+                className="absolute top-10 left-10 text-accent opacity-5 -z-10"
+              />
+
               <div className="flex justify-center gap-1.5 mb-10">
                 {[...Array(currentTestimonial.rating || 5)].map((_, i) => (
-                  <Star key={i} size={18} className="fill-accent text-accent accent-glow" />
+                  <Star
+                    key={i}
+                    size={18}
+                    className="fill-accent text-accent accent-glow"
+                  />
                 ))}
               </div>
 
@@ -92,15 +104,19 @@ export default function TestimonialSection() {
               </p>
 
               <div className="flex flex-col items-center">
-                <h4 className="text-xl font-black uppercase tracking-[0.2em] text-white mb-2">{currentTestimonial.name}</h4>
-                <p className="text-accent text-[9px] font-bold uppercase tracking-[0.3em]">{currentTestimonial.role || "Parent"}</p>
+                <h4 className="text-xl font-black uppercase tracking-[0.2em] text-white mb-2">
+                  {currentTestimonial.name}
+                </h4>
+                <p className="text-accent text-[9px] font-bold uppercase tracking-[0.3em]">
+                  {currentTestimonial.role || "Parent"}
+                </p>
               </div>
             </motion.div>
           </AnimatePresence>
 
           {/* Controls */}
           <div className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-8 group">
-            <button 
+            <button
               onClick={prev}
               className="w-14 h-14 rounded-2xl glass border border-white/10 flex items-center justify-center text-text-secondary hover:text-white hover:border-accent/40 hover:bg-accent/10 transition-all shadow-2xl group-hover:scale-110 active:scale-95"
             >
@@ -108,7 +124,7 @@ export default function TestimonialSection() {
             </button>
           </div>
           <div className="absolute top-1/2 -translate-y-1/2 -right-4 md:-right-8 group">
-            <button 
+            <button
               onClick={next}
               className="w-14 h-14 rounded-2xl glass border border-white/10 flex items-center justify-center text-text-secondary hover:text-white hover:border-accent/40 hover:bg-accent/10 transition-all shadow-2xl group-hover:scale-110 active:scale-95"
             >
@@ -124,7 +140,9 @@ export default function TestimonialSection() {
                 onClick={() => setCurrent(i)}
                 className={cn(
                   "h-1.5 rounded-full transition-all duration-500",
-                  current === i ? "w-10 bg-accent accent-glow" : "w-2 bg-white/10 hover:bg-white/20"
+                  current === i
+                    ? "w-10 bg-accent accent-glow"
+                    : "w-2 bg-white/10 hover:bg-white/20",
                 )}
               />
             ))}
@@ -133,5 +151,4 @@ export default function TestimonialSection() {
       </div>
     </section>
   );
-}
 }

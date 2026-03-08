@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   Clock,
   Trash2,
-  XCircle,
   Star,
   Quote,
   Activity,

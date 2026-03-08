@@ -2,17 +2,14 @@ import { useEffect, useState, useCallback } from "react";
 import api from "../../services/api";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Plus,
   Trash2,
   Book,
   Edit3,
-  X,
   Languages,
   Search,
   Calendar,
   Quote,
   Zap,
-  ChevronRight,
 } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 
