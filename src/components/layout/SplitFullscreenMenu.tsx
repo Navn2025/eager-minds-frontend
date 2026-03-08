@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { X, ArrowRight } from "lucide-react";
+import { X, ArrowRight, LogOut, LayoutDashboard, LogIn, Shield } from "lucide-react";
 import { cn } from "../../lib/utils";
+import { useAuth } from "../../context/AuthContext";
 
 interface NavItem {
   id: string;
@@ -105,6 +106,7 @@ const MarqueeColumn = ({ images, reverse = false }: { images: string[], reverse?
 
 export default function SplitFullscreenMenu({ isOpen, onClose }: SplitFullscreenMenuProps) {
   const [activeItem, setActiveItem] = useState<NavItem>(navItems[0]);
+  const { isLoggedIn, isAdmin, logout } = useAuth();
 
   return (
     <AnimatePresence>
@@ -159,6 +161,56 @@ export default function SplitFullscreenMenu({ isOpen, onClose }: SplitFullscreen
                   </Link>
                 </motion.div>
               ))}
+
+              {/* Auth Section - Mobile */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                className="mt-8 pt-8 border-t border-white/10 flex flex-col gap-4"
+              >
+                {isLoggedIn ? (
+                  <>
+                    <Link
+                      to="/dashboard"
+                      onClick={onClose}
+                      className="flex items-center gap-3 text-lg font-bold text-white/60 hover:text-white transition-colors uppercase tracking-widest"
+                    >
+                      <LayoutDashboard size={20} />
+                      Dashboard
+                    </Link>
+                    {isAdmin && (
+                      <Link
+                        to="/admin"
+                        onClick={onClose}
+                        className="flex items-center gap-3 text-lg font-bold text-accent hover:text-white transition-colors uppercase tracking-widest"
+                      >
+                        <Shield size={20} />
+                        Admin
+                      </Link>
+                    )}
+                    <button
+                      onClick={() => {
+                        logout();
+                        onClose();
+                      }}
+                      className="flex items-center gap-3 text-lg font-bold text-white/60 hover:text-white transition-colors uppercase tracking-widest"
+                    >
+                      <LogOut size={20} />
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    to="/login"
+                    onClick={onClose}
+                    className="flex items-center gap-3 text-lg font-bold text-white/60 hover:text-white transition-colors uppercase tracking-widest"
+                  >
+                    <LogIn size={20} />
+                    Login
+                  </Link>
+                )}
+              </motion.div>
             </nav>
           </div>
 
