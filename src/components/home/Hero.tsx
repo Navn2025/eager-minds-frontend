@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
@@ -22,16 +22,23 @@ function splitHeadline(headline: string): [string, string] {
   return [words.slice(0, mid).join(" "), words.slice(mid).join(" ")];
 }
 
-const fadeUp = {
+const heroEase: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 40 },
-  visible: (delay: number) => ({
+  visible: (delay: number = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 1, delay, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 1, delay, ease: heroEase },
   }),
 };
 
-export default function Hero({ headline, subheading, primaryCTA, secondaryCTA }: HeroProps) {
+export default function Hero({
+  headline,
+  subheading,
+  primaryCTA,
+  secondaryCTA,
+}: HeroProps) {
   const [line1, line2] = splitHeadline(headline);
 
   return (
@@ -39,14 +46,20 @@ export default function Hero({ headline, subheading, primaryCTA, secondaryCTA }:
       {/* Multi-colour aurora background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {/* Pink — top right */}
-        <div className="absolute top-[-10%] right-[-5%] w-[55%] h-[65%]
-          bg-[radial-gradient(ellipse,rgba(236,72,153,0.18)_0%,transparent_70%)]" />
+        <div
+          className="absolute top-[-10%] right-[-5%] w-[55%] h-[65%]
+          bg-[radial-gradient(ellipse,rgba(236,72,153,0.18)_0%,transparent_70%)]"
+        />
         {/* Purple — centre */}
-        <div className="absolute top-[15%] left-[30%] w-[50%] h-[55%]
-          bg-[radial-gradient(ellipse,rgba(168,85,247,0.14)_0%,transparent_65%)]" />
+        <div
+          className="absolute top-[15%] left-[30%] w-[50%] h-[55%]
+          bg-[radial-gradient(ellipse,rgba(168,85,247,0.14)_0%,transparent_65%)]"
+        />
         {/* Blue — bottom left */}
-        <div className="absolute bottom-[-5%] left-[-5%] w-[45%] h-[50%]
-          bg-[radial-gradient(ellipse,rgba(56,189,248,0.12)_0%,transparent_65%)]" />
+        <div
+          className="absolute bottom-[-5%] left-[-5%] w-[45%] h-[50%]
+          bg-[radial-gradient(ellipse,rgba(56,189,248,0.12)_0%,transparent_65%)]"
+        />
         <div className="noise-overlay" />
       </div>
 
@@ -127,9 +140,11 @@ export default function Hero({ headline, subheading, primaryCTA, secondaryCTA }:
       </div>
 
       {/* Bottom glow blob — pink → purple blend */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[280px]
+      <div
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[280px]
         bg-gradient-to-r from-pink-500/8 via-purple-500/12 to-sky-500/8
-        blur-[100px] rounded-full pointer-events-none" />
+        blur-[100px] rounded-full pointer-events-none"
+      />
     </section>
   );
 }
