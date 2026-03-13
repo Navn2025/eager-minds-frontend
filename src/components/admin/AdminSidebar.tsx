@@ -12,7 +12,6 @@ import {
   Star,
   Book,
   ChevronRight,
-  Shield,
   LogOut,
   X
 } from "lucide-react";
@@ -61,20 +60,14 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
       {/* Admin Brand */}
       <div className="p-10 flex items-center justify-between">
         <Link to="/" onClick={onClose} className="flex items-center gap-4 group">
-          <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center group-hover:border-accent/40 transition-all shadow-2xl">
-            <Shield
-              size={24}
-              className="text-accent shadow-[0_0_15px_var(--color-accent-glow)]"
-            />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[12px] font-black uppercase tracking-[0.3em] text-white">
-              Central
-            </span>
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
-              Command
-            </span>
-          </div>
+          <img
+            src="/whitethemelogo.svg"
+            alt="Eager Minds Club logo"
+            className="h-12 w-auto max-w-[190px] object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.24)] group-hover:scale-[1.03] transition-transform"
+          />
+          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-white/90 hidden sm:block">
+            Admin Panel
+          </span>
         </Link>
         <button onClick={onClose} className="lg:hidden text-white/40 hover:text-white transition-colors">
           <X size={20} />

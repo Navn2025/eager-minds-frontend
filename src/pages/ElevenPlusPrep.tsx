@@ -117,12 +117,12 @@ export default function ElevenPlusPrep() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-20 mt-10 space-y-6"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] text-[10px] font-black uppercase tracking-[0.3em] text-white/40">
-          <Compass size={12} className="text-white/60" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-purple-400/20 bg-purple-500/5 text-[10px] font-black uppercase tracking-[0.3em] text-purple-300/70">
+          <Compass size={12} className="text-purple-400" />
           <span>Academic Navigation</span>
         </div>
         <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-white">
-          11+ <span className="text-white/40">Studio.</span>
+          11+ <span className="text-gradient">Studio.</span>
         </h1>
         <p className="subtitle-editorial max-w-2xl">
           The ultimate protocol for examination mastery. Advanced study
@@ -165,15 +165,15 @@ export default function ElevenPlusPrep() {
               className={cn(
                 "group relative flex items-center gap-4 px-8 py-6 rounded-3xl border transition-all duration-700 overflow-hidden",
                 isActive
-                  ? "bg-white text-black border-white shadow-[0_0_40px_rgba(255,255,255,0.1)]"
-                  : "bg-white/[0.02] text-white/40 border-white/5 hover:border-white/20 hover:text-white",
+                  ? "bg-gradient-to-r from-pink-500 via-purple-600 to-violet-600 text-white border-transparent shadow-[0_0_30px_rgba(168,85,247,0.35)]"
+                  : "bg-white/[0.02] text-white/40 border-white/8 hover:border-purple-400/30 hover:text-white",
               )}
             >
               <div
                 className={cn(
                   "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
                   isActive
-                    ? "bg-black/5"
+                    ? "bg-white/10"
                     : "bg-white/5 group-hover:bg-white/10",
                 )}
               >
@@ -199,7 +199,7 @@ export default function ElevenPlusPrep() {
               <h2 className="text-2xl font-black text-white uppercase tracking-tight">
                 Core Curriculum
               </h2>
-              <div className="flex-1 h-px bg-white/5" />
+              <div className="flex-1 h-px bg-gradient-to-r from-purple-400/20 to-transparent" />
             </div>
             {topics.length > 0 ? (
               <div className="flex flex-wrap gap-3">
@@ -234,7 +234,7 @@ export default function ElevenPlusPrep() {
               <h2 className="text-2xl font-black text-white uppercase tracking-tight">
                 Technical Assets
               </h2>
-              <div className="flex-1 h-px bg-white/5" />
+              <div className="flex-1 h-px bg-gradient-to-r from-purple-400/20 to-transparent" />
             </div>
             {worksheets.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -248,7 +248,7 @@ export default function ElevenPlusPrep() {
                     <Card className="matte-card group relative h-full flex flex-col pt-10">
                       <CardHeader className="p-8 pb-4">
                         <div className="flex justify-between items-start mb-6">
-                          <div className="px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] text-[9px] font-black uppercase tracking-widest text-white/20">
+                          <div className="px-3 py-1 rounded-full border border-purple-400/20 bg-purple-500/5 text-[9px] font-black uppercase tracking-widest text-purple-300/60">
                             {ws.difficulty}
                           </div>
                           <Badge className="bg-white/5 border border-white/5 text-white/40 text-[8px] font-black uppercase tracking-widest px-3 py-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -262,7 +262,7 @@ export default function ElevenPlusPrep() {
                       <CardContent className="p-8 pt-4 flex-1 flex flex-col justify-between gap-10">
                         <div className="grid grid-cols-2 gap-4">
                           <Button
-                            className="h-14 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[10px] hover:scale-[1.02] transition-all"
+                            className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:scale-[1.02] transition-all bg-gradient-to-r from-pink-500 to-purple-600 border-none text-white shadow-[0_4px_16px_rgba(168,85,247,0.3)]"
                             onClick={() =>
                               setViewingPdf({ url: ws.pdfUrl, title: ws.title })
                             }
@@ -272,7 +272,7 @@ export default function ElevenPlusPrep() {
                           {ws.answerPdfUrl && (
                             <Button
                               variant="outline"
-                              className="h-14 rounded-2xl border-white/10 bg-white/[0.02] text-white font-black uppercase tracking-widest text-[10px] hover:bg-white hover:text-black transition-all"
+                              className="h-14 rounded-2xl border-purple-400/20 bg-purple-500/5 text-white/80 font-black uppercase tracking-widest text-[10px] hover:bg-purple-500/15 hover:border-purple-400/40 transition-all"
                               onClick={() =>
                                 setViewingPdf({
                                   url: ws.answerPdfUrl!,
@@ -288,7 +288,7 @@ export default function ElevenPlusPrep() {
                         {isLoggedIn && (
                           <button
                             onClick={() => markComplete(ws)}
-                            className="flex items-center justify-center gap-3 py-6 border-t border-white/5 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-all group/btn"
+                            className="flex items-center justify-center gap-3 py-6 border-t border-white/5 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-purple-300 transition-all group/btn"
                           >
                             <ShieldCheck
                               size={16}
@@ -325,7 +325,7 @@ export default function ElevenPlusPrep() {
               <h2 className="text-[10px] font-black text-white uppercase tracking-[0.4em]">
                 Cognitive Booster
               </h2>
-              <div className="flex-1 h-px bg-white/5" />
+              <div className="flex-1 h-px bg-gradient-to-r from-purple-400/20 to-transparent" />
             </div>
             {wordOfDay ? (
               <Card className="p-10 relative overflow-hidden bg-white/[0.02] border-white/5 rounded-[3.5rem] group">
@@ -399,11 +399,11 @@ export default function ElevenPlusPrep() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <Card className="p-10 bg-white text-black border-none rounded-[3.5rem] shadow-[0_0_50px_rgba(255,255,255,0.05)] relative overflow-hidden group">
+            <Card className="p-10 bg-gradient-to-br from-pink-500 via-purple-600 to-violet-700 text-white border-none rounded-[3.5rem] shadow-[0_8px_40px_rgba(168,85,247,0.30)] relative overflow-hidden group">
               <div className="absolute -bottom-10 -right-10 opacity-10 group-hover:rotate-12 transition-transform duration-1000">
                 <Lightbulb size={120} />
               </div>
-              <h3 className="text-[10px] font-black uppercase tracking-[0.4em] mb-6">
+              <h3 className="text-[10px] font-black uppercase tracking-[0.4em] mb-6 text-white/70">
                 Execution Tip
               </h3>
               <p className="text-lg font-black leading-tight tracking-tighter mb-10">
@@ -412,13 +412,13 @@ export default function ElevenPlusPrep() {
               </p>
               <Button
                 variant="ghost"
-                className="h-16 w-full rounded-2xl border-black/10 text-black hover:bg-black group transition-all"
+                className="h-16 w-full rounded-2xl bg-white/10 border border-white/20 text-white hover:bg-white/20 group transition-all"
               >
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] group-hover:text-white">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">
                   Access Protocol
                 </span>
                 <ChevronRight
-                  className="ml-2 group-hover:translate-x-1 group-hover:text-white transition-all"
+                  className="ml-2 group-hover:translate-x-1 transition-all"
                   size={16}
                 />
               </Button>

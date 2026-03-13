@@ -38,10 +38,14 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
       {/* Brand */}
       <div className="p-10 flex items-center justify-between">
         <Link to="/" onClick={onClose} className="text-2xl font-black tracking-tighter text-white flex items-center gap-3 group">
-          <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center shadow-[0_0_20px_var(--color-accent-glow)] group-hover:rotate-12 transition-transform">
-            <div className="w-2 h-2 bg-white rounded-full" />
-          </div>
-          <span className="uppercase tracking-[0.2em] text-[12px] font-bold">Eager Minds</span>
+          <img
+            src="/whitethemelogo.svg"
+            alt="Eager Minds Club logo"
+            className="h-12 w-auto max-w-[190px] object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.24)] group-hover:scale-[1.03] transition-transform"
+          />
+          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-white/90 hidden sm:block">
+            Eager Minds
+          </span>
         </Link>
         <button onClick={onClose} className="lg:hidden text-white/40 hover:text-white transition-colors">
           <X size={20} />

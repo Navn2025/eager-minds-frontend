@@ -18,26 +18,39 @@ export default function FullscreenNavbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-[100] px-6 py-6 flex justify-center pointer-events-none">
+      <nav className="fixed top-0 left-0 right-0 z-[100] px-6 py-5 flex justify-center pointer-events-none">
         <div className={cn(
-          "w-full max-w-7xl flex items-center justify-between px-6 py-3 rounded-2xl transition-all duration-500 pointer-events-auto",
-          scrolled 
-            ? "glass accent-glow" 
+          "w-full max-w-7xl flex items-center justify-between px-5 py-2.5 rounded-2xl transition-all duration-500 pointer-events-auto",
+          scrolled
+            ? "bg-[#07050F]/75 backdrop-blur-2xl border border-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.6),0_0_0_1px_rgba(168,85,247,0.12)]"
             : "bg-transparent"
         )}>
           {/* Logo */}
-          <Link 
-            to="/" 
-            className="text-xl font-black tracking-tighter text-white flex items-center gap-3 group"
+          <Link
+            to="/"
+            className="flex items-center gap-3 group rounded-xl pr-2"
           >
-            <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center shadow-[0_0_25px_rgba(99,102,241,0.6)] group-hover:scale-110 transition-transform">
-              <div className="w-1.5 h-1.5 bg-white rounded-full" />
+            <div className="flex items-center justify-center rounded-xl px-3 py-2
+              bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-sky-500/10
+              border border-purple-400/20
+              shadow-[0_4px_20px_rgba(168,85,247,0.18)]
+              group-hover:border-purple-400/40 group-hover:shadow-[0_4px_28px_rgba(236,72,153,0.22)]
+              transition-all duration-300">
+              <img
+                src="/whitethemelogo.svg"
+                alt="Eager Minds Club logo"
+                className="h-10 sm:h-11 w-auto max-w-[190px] object-contain
+                  drop-shadow-[0_0_10px_rgba(168,85,247,0.45)]
+                  group-hover:scale-[1.04] transition-transform duration-300"
+              />
             </div>
-            <span className="uppercase tracking-[0.2em] text-[11px] font-bold hidden sm:block">Eager Minds Club</span>
+            <span className="hidden sm:block text-[12px] md:text-[13px] font-extrabold uppercase tracking-[0.18em] text-white/90 leading-none pt-[1px]">
+              Eager Minds Club
+            </span>
           </Link>
 
           {/* Center Links */}
-          <div className="hidden lg:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-7">
             {[
               { label: "Home", path: "/" },
               { label: "11+ Prep", path: "/11-plus-prep" },
@@ -45,54 +58,63 @@ export default function FullscreenNavbar() {
               { label: "Arts & Craft", path: "/arts-craft" },
               { label: "Blog", path: "/blog" }
             ].map((link) => (
-              <Link 
-                key={link.label} 
+              <Link
+                key={link.label}
                 to={link.path}
-                className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary hover:text-white transition-colors relative group"
+                className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/50 hover:text-white/90 transition-colors duration-200 relative group"
               >
                 {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-accent transition-all duration-300 group-hover:w-full" />
+                {/* gradient underline on hover */}
+                <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] rounded-full
+                  bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400
+                  transition-all duration-300 group-hover:w-full" />
               </Link>
             ))}
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {isLoggedIn ? (
               <div className="hidden sm:flex items-center gap-3">
                 <Link to="/dashboard">
-                  <button className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary hover:text-white transition-colors">
+                  <button className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white/50 hover:text-white/90 transition-colors">
                     <LayoutDashboard size={14} />
                     Dashboard
                   </button>
                 </Link>
                 {isAdmin && (
                   <Link to="/admin">
-                    <button className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent hover:text-white transition-colors">
+                    <button className="text-[10px] font-bold uppercase tracking-[0.18em] text-purple-400 hover:text-white transition-colors">
                       Admin
                     </button>
                   </Link>
                 )}
                 <button
                   onClick={logout}
-                  className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary hover:text-white transition-colors"
+                  className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/40 hover:text-white/90 transition-colors"
                 >
                   <LogOut size={14} />
                 </button>
               </div>
             ) : (
               <Link to="/login" className="hidden sm:block">
-                <button className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary hover:text-white transition-colors">
+                <button className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/50 hover:text-white/90 transition-colors">
                   Login
                 </button>
               </Link>
             )}
+
+            {/* Menu button — brand gradient on hover */}
             <button
               onClick={() => setIsOpen(true)}
-              className="flex items-center gap-3 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-accent/10 hover:border-accent/40 transition-all group"
+              className="flex items-center gap-2.5 px-4 py-2 rounded-xl
+                bg-white/[0.04] border border-white/10
+                hover:bg-gradient-to-r hover:from-pink-500/15 hover:to-purple-500/15
+                hover:border-purple-400/35
+                transition-all duration-300 group"
             >
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">Menu</span>
-              <Menu size={16} className="text-accent group-hover:rotate-90 transition-transform" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/80">Menu</span>
+              <Menu size={15} className="text-purple-400 group-hover:text-pink-400 group-hover:rotate-90 transition-all duration-300" />
             </button>
           </div>
         </div>

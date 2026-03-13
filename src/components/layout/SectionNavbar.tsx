@@ -86,10 +86,12 @@ export default function SectionNavbar() {
           onClick={() => scrollToSection("home")}
           className="text-xl font-black tracking-tighter text-white hover:opacity-80 transition-opacity flex items-center gap-2"
         >
-          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-            <div className="w-1.5 h-1.5 bg-black rounded-full" />
-          </div>
-          <span className="hidden sm:inline">Eager Minds Club</span>
+          <img
+            src="/whitethemelogo.svg"
+            alt="Eager Minds Club logo"
+            className="h-12 w-auto max-w-[220px] object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.24)]"
+          />
+          <span className="hidden sm:inline text-sm font-semibold tracking-wide">Eager Minds Club</span>
         </Link>
 
         {/* Desktop Section Links */}

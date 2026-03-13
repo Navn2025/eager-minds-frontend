@@ -37,12 +37,12 @@ export default function ArtsCraft() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-24 mt-10 space-y-6"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] text-[10px] font-black uppercase tracking-[0.3em] text-white/40">
-          <Paintbrush size={12} className="text-white/60" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-pink-400/20 bg-pink-500/5 text-[10px] font-black uppercase tracking-[0.3em] text-pink-300/70">
+          <Paintbrush size={12} className="text-pink-400" />
           <span>Creative Architecture</span>
         </div>
         <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-white">
-          Arts & <span className="text-white/40">Studio.</span>
+          Arts & <span className="text-gradient">Studio.</span>
         </h1>
         <p className="text-white/40 text-lg font-medium max-w-2xl leading-relaxed">
           The canvas for advanced creativity. Hands-on project nodes designed to
@@ -56,7 +56,7 @@ export default function ArtsCraft() {
           <h2 className="text-2xl font-black text-white uppercase tracking-tight">
             Project Matrix
           </h2>
-          <div className="flex-1 h-px bg-white/5" />
+          <div className="flex-1 h-px bg-gradient-to-r from-pink-400/20 to-transparent" />
         </div>
 
         {loading ? (
@@ -141,12 +141,12 @@ export default function ArtsCraft() {
                             project.videoUrl &&
                             window.open(project.videoUrl, "_blank")
                           }
-                          className="h-14 font-black uppercase tracking-widest text-[10px] flex-1 rounded-2xl border-white/10 hover:bg-white hover:text-black transition-all"
+                          className="h-14 font-black uppercase tracking-widest text-[10px] flex-1 rounded-2xl border-purple-400/20 bg-purple-500/5 text-white/80 hover:bg-purple-500/15 hover:border-purple-400/40 transition-all"
                         >
                           <Play size={14} className="mr-2" /> Tutorial
                         </Button>
                       )}
-                      <Button className="h-14 font-black uppercase tracking-widest text-[10px] flex-1 rounded-2xl bg-white text-black hover:scale-[1.02] transition-all">
+                      <Button className="h-14 font-black uppercase tracking-widest text-[10px] flex-1 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 text-white border-none hover:scale-[1.02] transition-all shadow-[0_4px_16px_rgba(168,85,247,0.25)]">
                         Full Blueprint
                       </Button>
                     </div>
