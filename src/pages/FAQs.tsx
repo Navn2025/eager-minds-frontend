@@ -46,12 +46,12 @@ export default function FAQs() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-24 mt-10 space-y-6 text-center md:text-left"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] text-[10px] font-black uppercase tracking-[0.3em] text-white/40">
-          <HelpCircle size={12} className="text-white/60" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-purple-400/20 bg-purple-500/5 text-[10px] font-black uppercase tracking-[0.3em] text-purple-300/70">
+          <HelpCircle size={12} className="text-purple-400" />
           <span>Support Protocol</span>
         </div>
         <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-white">
-          Common <span className="text-white/40">Questions.</span>
+          Common <span className="text-gradient">Questions.</span>
         </h1>
         <p className="text-white/40 text-lg font-medium max-w-2xl leading-relaxed">
           Comprehensive intelligence on platform operations, membership
@@ -70,8 +70,8 @@ export default function FAQs() {
             className={cn(
               "px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-500 border",
               activeCategory === cat
-                ? "bg-white text-black border-white shadow-[0_0_30px_rgba(255,255,255,0.1)]"
-                : "bg-white/[0.02] text-white/40 border-white/5 hover:border-white/20 hover:text-white",
+                ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white border-transparent shadow-[0_4px_16px_rgba(168,85,247,0.3)]"
+                : "bg-white/[0.02] text-white/40 border-white/5 hover:border-purple-400/30 hover:text-white",
             )}
           >
             {cat}
@@ -120,8 +120,8 @@ export default function FAQs() {
                       className={cn(
                         "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 border",
                         isOpen
-                          ? "bg-white text-black border-white rotate-180"
-                          : "bg-white/[0.02] text-white/20 border-white/5 group-hover:border-white/10 group-hover:text-white",
+                          ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white border-transparent rotate-180"
+                          : "bg-white/[0.02] text-white/20 border-white/5 group-hover:border-purple-400/20 group-hover:text-white",
                       )}
                     >
                       <ChevronDown size={18} strokeWidth={3} />

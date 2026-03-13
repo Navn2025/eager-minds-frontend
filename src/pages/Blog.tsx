@@ -58,12 +58,12 @@ export default function Blog() {
         className="flex mt-10 flex-col md:flex-row md:items-center justify-between gap-10 mb-20"
       >
         <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] text-[10px] font-black uppercase tracking-[0.3em] text-white/40">
-            <Writing size={12} className="text-white/60" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-purple-400/20 bg-purple-500/5 text-[10px] font-black uppercase tracking-[0.3em] text-purple-300/70">
+            <Writing size={12} className="text-purple-400" />
             <span>Editorial Insights</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-white">
-            Academic <span className="text-white/40">Studio.</span>
+            Academic <span className="text-gradient">Studio.</span>
           </h1>
           <p className="text-white/40 text-lg font-medium max-w-xl leading-relaxed">
             Advanced study architecture and industry updates. Expert narratives
@@ -152,7 +152,7 @@ export default function Blog() {
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 group-hover:text-white transition-colors">
                           Architecture Detail
                         </span>
-                        <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/40 group-hover:bg-white group-hover:text-black transition-all">
+                        <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/40 group-hover:bg-gradient-to-r group-hover:from-pink-500 group-hover:to-purple-600 group-hover:text-white transition-all">
                           <ArrowRight size={20} />
                         </div>
                       </div>

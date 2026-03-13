@@ -72,8 +72,9 @@ export default function Login() {
 
   return (
     <div className="page-container flex flex-col items-center justify-center min-h-[90vh] pt-40 md:pt-52 pb-20 relative overflow-hidden">
-      {/* Background Ambience */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/[0.02] rounded-full blur-[120px] pointer-events-none" />
+      {/* Brand aurora ambience */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-purple-500/[0.04] rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/3 right-1/4 w-[350px] h-[350px] bg-pink-500/[0.04] rounded-full blur-[100px] pointer-events-none" />
 
       <motion.header
         key={isLogin ? "login-header" : "register-header"}
@@ -81,13 +82,13 @@ export default function Login() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-16 mt-10 space-y-4 text-center"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mx-auto">
-          <Fingerprint size={12} className="text-white/60" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-purple-400/20 bg-purple-500/5 text-[10px] font-black uppercase tracking-[0.3em] text-purple-300/70 mx-auto">
+          <Fingerprint size={12} className="text-purple-400" />
           <span>Security Protocol</span>
         </div>
         <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-white">
           {isLogin ? "Welcome" : "Create"}{" "}
-          <span className="text-white/40">
+          <span className="text-gradient">
             {isLogin ? "Back." : "Account."}
           </span>
         </h1>
@@ -203,7 +204,7 @@ export default function Login() {
 
               <Button
                 type="submit"
-                className="w-full h-16 rounded-[1.5rem] bg-white text-black font-black uppercase tracking-widest text-[11px] group shadow-[0_0_50px_rgba(255,255,255,0.1)] hover:scale-[1.02] transition-all"
+                className="w-full h-16 rounded-[1.5rem] bg-gradient-to-r from-pink-500 via-purple-600 to-violet-600 text-white font-black uppercase tracking-widest text-[11px] group shadow-[0_6px_30px_rgba(168,85,247,0.35)] hover:shadow-[0_8px_36px_rgba(236,72,153,0.40)] hover:scale-[1.02] transition-all border-none"
                 disabled={loading}
               >
                 {loading
@@ -227,7 +228,7 @@ export default function Login() {
                   setIsLogin(!isLogin);
                   setError("");
                 }}
-                className="text-white font-black uppercase tracking-[0.3em] text-[10px] hover:scale-105 transition-all flex items-center gap-2 mx-auto px-6 py-2 rounded-full border border-white/5 hover:bg-white hover:text-black hover:border-white"
+                className="text-white font-black uppercase tracking-[0.3em] text-[10px] hover:scale-105 transition-all flex items-center gap-2 mx-auto px-6 py-2 rounded-full border border-purple-400/20 bg-purple-500/5 hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-600 hover:border-transparent hover:text-white"
               >
                 {isLogin ? "Register Now" : "Sign In Here"}
                 <Sparkles size={12} />

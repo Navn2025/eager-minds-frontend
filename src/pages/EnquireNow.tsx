@@ -51,12 +51,12 @@ export default function EnquireNow() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-24 mt-10 space-y-6"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] text-[10px] font-black uppercase tracking-[0.3em] text-white/40">
-          <Compass size={12} className="text-white/60" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-purple-400/20 bg-purple-500/5 text-[10px] font-black uppercase tracking-[0.3em] text-purple-300/70">
+          <Compass size={12} className="text-purple-400" />
           <span>Consultation Request</span>
         </div>
         <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-white">
-          Let's Discuss <span className="text-white/40">Your Future.</span>
+          Let's Discuss <span className="text-gradient">Your Future.</span>
         </h1>
         <p className="text-white/40 text-lg font-medium max-w-2xl leading-relaxed">
           Initialize a dialogue with our academic consultants. We facilitate
@@ -92,10 +92,10 @@ export default function EnquireNow() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 + i * 0.1 }}
-                className="group p-10 bg-white/[0.01] border border-white/5 rounded-[2.5rem] hover:bg-white hover:text-black transition-all duration-700"
+                className="group p-10 bg-white/[0.01] border border-white/5 rounded-[2.5rem] hover:bg-purple-500/5 hover:border-purple-400/25 transition-all duration-700"
               >
                 <div className="flex items-start justify-between mb-8">
-                  <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
+                  <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-purple-500/20 group-hover:text-purple-300 transition-colors">
                     <node.icon size={24} />
                   </div>
                   {node.external && (
@@ -118,12 +118,12 @@ export default function EnquireNow() {
             ))}
           </div>
 
-          <div className="p-10 rounded-[2.5rem] bg-white text-black overflow-hidden relative group">
+          <div className="p-10 rounded-[2.5rem] bg-gradient-to-br from-pink-500 via-purple-600 to-violet-700 text-white overflow-hidden relative group shadow-[0_8px_30px_rgba(168,85,247,0.30)]">
             <div className="absolute top-0 right-0 p-10 opacity-5 scale-150 rotate-12 group-hover:rotate-0 transition-transform duration-1000">
               <ShieldCheck size={100} />
             </div>
             <div className="relative z-10">
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] mb-4">
+              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] mb-4 text-white/70">
                 Response Protocol
               </h3>
               <p className="text-xl font-bold tracking-tight">
@@ -174,7 +174,7 @@ export default function EnquireNow() {
                 <Card className="relative overflow-hidden rounded-[3.5rem] p-4 bg-white/[0.01] border-white/5">
                   <div className="p-10 space-y-12">
                     <div className="flex items-center gap-4">
-                      <div className="w-2 h-8 bg-white rounded-full" />
+                      <div className="w-2 h-8 bg-gradient-to-b from-pink-500 to-purple-600 rounded-full" />
                       <h2 className="text-2xl font-black text-white tracking-tighter italic">
                         Inquiry Matrix
                       </h2>
@@ -273,7 +273,7 @@ export default function EnquireNow() {
                       <Button
                         type="submit"
                         disabled={status === "sending"}
-                        className="w-full h-16 rounded-[1.5rem] bg-white text-black font-black uppercase tracking-widest text-[11px] group shadow-[0_0_50px_rgba(255,255,255,0.1)] hover:scale-[1.02] transition-all"
+                        className="w-full h-16 rounded-[1.5rem] bg-gradient-to-r from-pink-500 via-purple-600 to-violet-600 text-white font-black uppercase tracking-widest text-[11px] group shadow-[0_6px_30px_rgba(168,85,247,0.35)] hover:scale-[1.02] transition-all border-none"
                       >
                         {status === "sending"
                           ? "Encrypting..."

@@ -64,12 +64,12 @@ export default function Magazines() {
         className="flex flex-col mt-10 md:flex-row md:items-center justify-between gap-10 mb-20"
       >
         <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] text-[10px] font-black uppercase tracking-[0.3em] text-white/40">
-            <Sparkles size={12} className="text-white/60" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-pink-400/20 bg-pink-500/5 text-[10px] font-black uppercase tracking-[0.3em] text-pink-300/70">
+            <Sparkles size={12} className="text-pink-400" />
             <span>Monthly Publication</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-white">
-            Learning <span className="text-white/40">Vault.</span>
+            Learning <span className="text-gradient">Vault.</span>
           </h1>
           <p className="text-white/40 text-lg font-medium max-w-xl leading-relaxed">
             Exclusive editorial content for the curious mind. Delve into our
@@ -117,11 +117,11 @@ export default function Magazines() {
                   <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white/20">
                     Yearly Archive
                   </span>
-                  <h2 className="text-6xl font-black text-white tracking-tighter leading-none">
+                  <h2 className="text-6xl font-black tracking-tighter leading-none text-gradient">
                     {year}
                   </h2>
                 </div>
-                <div className="hidden md:block flex-1 h-px bg-white/5 mx-10 mb-4" />
+                <div className="hidden md:block flex-1 h-px bg-gradient-to-r from-purple-400/20 to-transparent mx-10 mb-4" />
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-3 whitespace-nowrap">
                   {grouped[Number(year)].length} Issues Published
                 </span>
@@ -160,7 +160,7 @@ export default function Magazines() {
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-60 group-hover:opacity-20 transition-all duration-700" />
                           </div>
 
-                          <div className="absolute top-8 right-8 w-12 h-12 rounded-2xl bg-white text-black flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:rotate-12 transition-all duration-500 shadow-2xl z-20">
+                          <div className="absolute top-8 right-8 w-12 h-12 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:rotate-12 transition-all duration-500 shadow-2xl z-20">
                             <ArrowRight size={20} />
                           </div>
                         </div>

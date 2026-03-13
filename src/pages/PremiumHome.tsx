@@ -54,7 +54,7 @@ export default function PremiumHome() {
   }, []);
 
   const heroConfig = {
-    headline: "Where Bright Minds Grow Brighter",
+    headline: "Where Creativity Meets Curiosity",
     subheading: "Expert preparation for the next generation of innovators. Master the 11+ with futuristic learning strategies.",
     primaryCTA: { text: "Join the Club", link: "/login" },
     secondaryCTA: { text: "Learn More", link: "/about" },

@@ -34,12 +34,12 @@ export default function WhatsOn() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-24 mt-10 space-y-6"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] text-[10px] font-black uppercase tracking-[0.3em] text-white/40">
-          <Calendar size={12} className="text-white/60" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-sky-400/20 bg-sky-500/5 text-[10px] font-black uppercase tracking-[0.3em] text-sky-300/70">
+          <Calendar size={12} className="text-sky-400" />
           <span>Event Timeline</span>
         </div>
         <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-white">
-          Upcoming <span className="text-white/40">Events.</span>
+          Upcoming <span className="text-gradient">Events.</span>
         </h1>
         <p className="text-white/40 text-lg font-medium max-w-2xl leading-relaxed">
           The central schedule for workshops, academic sessions, and innovative
@@ -73,7 +73,7 @@ export default function WhatsOn() {
 
                 <div className="p-10 flex flex-col h-full">
                   <div className="flex items-center gap-4 mb-8">
-                    <div className="px-4 py-2 rounded-2xl bg-white text-black text-[10px] font-black uppercase tracking-widest">
+                    <div className="px-4 py-2 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 text-white text-[10px] font-black uppercase tracking-widest shadow-[0_4px_12px_rgba(168,85,247,0.3)]">
                       {new Date(event.date).toLocaleDateString("en-GB", {
                         day: "2-digit",
                         month: "short",
@@ -100,7 +100,7 @@ export default function WhatsOn() {
                         href={event.bookingLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="h-14 px-8 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[10px] shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:scale-105 transition-all flex items-center gap-2"
+                        className="h-14 px-8 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 text-white font-black uppercase tracking-widest text-[10px] shadow-[0_4px_16px_rgba(168,85,247,0.30)] hover:scale-105 transition-all flex items-center gap-2 border-none"
                       >
                         Secure Entry
                         <ExternalLink size={14} />

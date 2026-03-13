@@ -127,7 +127,7 @@ export default function SplitFullscreenMenu({ isOpen, onClose }: SplitFullscreen
           </button>
 
           {/* Left Panel - Navigation (40%) */}
-          <div className="w-full md:w-[40%] h-full flex flex-col justify-center px-8 md:px-16 border-r border-blue-900/30 bg-[#000510]">
+          <div className="w-full md:w-[40%] h-full flex flex-col justify-center px-8 md:px-16 border-r border-purple-900/30 bg-[#07050F]">
             <nav className="flex flex-col gap-4 md:gap-6 mt-20 md:mt-0">
               {navItems.map((item, idx) => (
                 <motion.div
@@ -155,7 +155,7 @@ export default function SplitFullscreenMenu({ isOpen, onClose }: SplitFullscreen
                     {activeItem.id === item.id && (
                       <motion.div
                         layoutId="activeIndicator"
-                        className="w-2 h-2 rounded-full bg-white"
+                        className="w-2 h-2 rounded-full bg-gradient-to-r from-pink-400 to-purple-500"
                       />
                     )}
                   </Link>
@@ -215,7 +215,7 @@ export default function SplitFullscreenMenu({ isOpen, onClose }: SplitFullscreen
           </div>
 
           {/* Right Panel - Preview (60%) */}
-          <div className="hidden md:flex w-[60%] h-full bg-[#00081a] relative overflow-hidden">
+          <div className="hidden md:flex w-[60%] h-full bg-[#07050F] relative overflow-hidden">
             {/* Background Marquee */}
             <div className="absolute inset-0 grid grid-cols-3 gap-6 px-12 opacity-20 hover:opacity-40 transition-opacity duration-1000 pointer-events-none">
               <MarqueeColumn images={activeItem.previewImages} />
@@ -244,9 +244,10 @@ export default function SplitFullscreenMenu({ isOpen, onClose }: SplitFullscreen
                 <Link
                   to={activeItem.path}
                   onClick={onClose}
-                  className="inline-flex items-center gap-4 text-white hover:gap-6 transition-all duration-300 font-bold uppercase tracking-widest text-sm"
+                  className="inline-flex items-center gap-4 text-white hover:gap-6 transition-all duration-300 font-bold uppercase tracking-widest text-sm group"
                 >
-                  Discover More <ArrowRight size={18} />
+                  <span className="relative after:absolute after:bottom-0 after:left-0 after:h-[1.5px] after:w-0 after:bg-gradient-to-r after:from-pink-400 after:via-purple-400 after:to-sky-400 after:transition-all after:duration-300 group-hover:after:w-full">Discover More</span>
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </motion.div>
@@ -257,7 +258,7 @@ export default function SplitFullscreenMenu({ isOpen, onClose }: SplitFullscreen
               className="absolute top-12 right-12 z-[210] group flex items-center gap-4 text-white/60 hover:text-white transition-all"
             >
               <span className="text-sm font-bold uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity">Close</span>
-              <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
+              <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-gradient-to-r group-hover:from-pink-500 group-hover:to-purple-600 group-hover:border-transparent group-hover:text-white transition-all">
                 <X size={20} />
               </div>
             </button>

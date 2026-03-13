@@ -15,7 +15,25 @@ interface HeroProps {
   };
 }
 
+// Split "Where Creativity Meets Curiosity" into two balanced lines
+function splitHeadline(headline: string): [string, string] {
+  const words = headline.split(" ");
+  const mid = Math.ceil(words.length / 2);
+  return [words.slice(0, mid).join(" "), words.slice(mid).join(" ")];
+}
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: (delay: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 1, delay, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
+
 export default function Hero({ headline, subheading, primaryCTA, secondaryCTA }: HeroProps) {
+  const [line1, line2] = splitHeadline(headline);
+
   return (
     <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-32 pb-20 px-6 overflow-hidden">
       {/* Multi-colour aurora background */}
@@ -33,52 +51,78 @@ export default function Hero({ headline, subheading, primaryCTA, secondaryCTA }:
       </div>
 
       <div className="relative z-10 max-w-[1200px] w-full text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="space-y-8"
+        {/* ── Headline — two-line staggered slide-up ── */}
+        <div className="overflow-hidden mb-3">
+          <motion.h1
+            custom={0}
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            className="text-6xl md:text-8xl font-black tracking-tight leading-[1.1] text-gradient"
+          >
+            {line1}
+          </motion.h1>
+        </div>
+        <div className="overflow-hidden mb-8">
+          <motion.h1
+            custom={0.18}
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            className="text-6xl md:text-8xl font-black tracking-tight leading-[1.1] text-gradient"
+          >
+            {line2}
+          </motion.h1>
+        </div>
+
+        {/* ── Subheading ── */}
+        <motion.p
+          custom={0.38}
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          className="max-w-2xl mx-auto text-xl md:text-2xl font-medium leading-relaxed mb-10"
+          style={{ color: "var(--color-text-secondary)" }}
         >
-          {/* Headline — brand gradient */}
-          <h1 className="text-6xl md:text-8xl font-black tracking-tight leading-[1.1] text-gradient">
-            {headline}
-          </h1>
+          {subheading}
+        </motion.p>
 
-          <p className="max-w-2xl mx-auto text-xl md:text-2xl font-medium leading-relaxed"
-             style={{ color: "var(--color-text-secondary)" }}>
-            {subheading}
-          </p>
+        {/* ── CTAs ── */}
+        <motion.div
+          custom={0.52}
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          className="flex flex-col sm:flex-row items-center justify-center gap-5"
+        >
+          {/* Primary — brand gradient pill */}
+          <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
+            <Link
+              to={primaryCTA.link}
+              className="inline-flex items-center gap-2.5 px-9 py-4 rounded-full font-bold text-lg text-white
+                bg-gradient-to-r from-pink-500 via-purple-500 to-violet-600
+                shadow-[0_6px_28px_rgba(168,85,247,0.38)]
+                hover:shadow-[0_8px_36px_rgba(236,72,153,0.40)]
+                transition-shadow duration-300"
+            >
+              {primaryCTA.text}
+              <ArrowRight size={18} />
+            </Link>
+          </motion.div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-5 pt-6">
-            {/* Primary — brand gradient pill */}
-            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
-              <Link
-                to={primaryCTA.link}
-                className="inline-flex items-center gap-2.5 px-9 py-4 rounded-full font-bold text-lg text-white
-                  bg-gradient-to-r from-pink-500 via-purple-500 to-violet-600
-                  shadow-[0_6px_28px_rgba(168,85,247,0.38)]
-                  hover:shadow-[0_8px_36px_rgba(236,72,153,0.40)]
-                  transition-shadow duration-300"
-              >
-                {primaryCTA.text}
-                <ArrowRight size={18} />
-              </Link>
-            </motion.div>
-
-            {/* Secondary — glass with gradient border */}
-            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
-              <Link
-                to={secondaryCTA.link}
-                className="inline-flex items-center gap-2 px-9 py-4 rounded-full font-bold text-lg text-white/80
-                  bg-white/[0.04] backdrop-blur-sm
-                  border border-purple-400/25
-                  hover:bg-white/[0.08] hover:border-purple-400/45 hover:text-white
-                  transition-all duration-300"
-              >
-                {secondaryCTA.text}
-              </Link>
-            </motion.div>
-          </div>
+          {/* Secondary — glass with gradient border */}
+          <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
+            <Link
+              to={secondaryCTA.link}
+              className="inline-flex items-center gap-2 px-9 py-4 rounded-full font-bold text-lg text-white/80
+                bg-white/[0.04] backdrop-blur-sm
+                border border-purple-400/25
+                hover:bg-white/[0.08] hover:border-purple-400/45 hover:text-white
+                transition-all duration-300"
+            >
+              {secondaryCTA.text}
+            </Link>
+          </motion.div>
         </motion.div>
       </div>
 

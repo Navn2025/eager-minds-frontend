@@ -19,12 +19,12 @@ export default function AboutUs() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-24 mt-10 space-y-6"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] text-[10px] font-black uppercase tracking-[0.3em] text-white/40">
-          <Compass size={12} className="text-white/60" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-pink-400/20 bg-pink-500/5 text-[10px] font-black uppercase tracking-[0.3em] text-pink-300/70">
+          <Compass size={12} className="text-pink-400" />
           <span>The Manifesto</span>
         </div>
         <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-white">
-          About <span className="text-white/40">Us.</span>
+          About <span className="text-gradient">Us.</span>
         </h1>
         <p className="subtitle-editorial max-w-2xl">
           Architecting the future of elite education. We are a collective of
@@ -39,12 +39,12 @@ export default function AboutUs() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Card className="matte-card h-full bg-white text-black border-none p-12 relative overflow-hidden group">
+          <Card className="matte-card h-full bg-gradient-to-br from-pink-500 via-purple-600 to-violet-700 text-white border-none p-12 relative overflow-hidden group shadow-[0_8px_40px_rgba(168,85,247,0.30)]">
             <div className="absolute top-0 right-0 p-12 opacity-5 scale-150 group-hover:rotate-12 transition-transform duration-1000">
               <Target size={120} />
             </div>
             <div className="relative z-10">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.4em] mb-8">
+              <h2 className="text-[10px] font-black uppercase tracking-[0.4em] mb-8 text-white/70">
                 Our Vision
               </h2>
               <p className="text-3xl font-black tracking-tighter leading-tight">
@@ -86,7 +86,7 @@ export default function AboutUs() {
             <h2 className="text-2xl font-black text-white uppercase tracking-tight">
               The Team
             </h2>
-            <div className="flex-1 h-px bg-white/5" />
+            <div className="flex-1 h-px bg-gradient-to-r from-pink-400/20 to-transparent" />
           </div>
           <div className="p-16 border border-dashed border-white/5 rounded-[3rem] bg-white/[0.01] text-center">
             <Users size={48} className="mx-auto text-white/5 mb-6" />
@@ -101,7 +101,7 @@ export default function AboutUs() {
             <h2 className="text-2xl font-black text-white uppercase tracking-tight">
               Network
             </h2>
-            <div className="flex-1 h-px bg-white/5" />
+            <div className="flex-1 h-px bg-gradient-to-r from-purple-400/20 to-transparent" />
           </div>
 
           <div className="grid grid-cols-1 gap-4">
@@ -133,10 +133,10 @@ export default function AboutUs() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 + i * 0.1 }}
-                className="flex items-center justify-between p-8 bg-white/[0.01] border border-white/5 rounded-3xl group hover:bg-white hover:text-black transition-all duration-500"
+                className="flex items-center justify-between p-8 bg-white/[0.01] border border-white/5 rounded-3xl group hover:bg-gradient-to-r hover:from-pink-500/10 hover:to-purple-600/10 hover:border-purple-400/30 transition-all duration-500"
               >
                 <div className="flex items-center gap-6">
-                  <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
+                  <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-purple-500/20 group-hover:text-purple-300 transition-colors">
                     <link.icon size={20} />
                   </div>
                   <div>

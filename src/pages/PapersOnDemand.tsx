@@ -94,7 +94,7 @@ export default function PapersOnDemand() {
           The Academic Vault is encrypted. Please authenticate to access our exclusive practice parameters.
         </p>
         <Link to="/login">
-          <Button className="h-16 px-10 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[10px] hover:scale-105 transition-all shadow-[0_0_50px_rgba(255,255,255,0.1)]">
+          <Button className="h-16 px-10 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 text-white font-black uppercase tracking-widest text-[10px] hover:scale-105 transition-all shadow-[0_6px_30px_rgba(168,85,247,0.35)] border-none">
             Log In to Vault
           </Button>
         </Link>
@@ -113,12 +113,12 @@ export default function PapersOnDemand() {
            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
            <ShieldAlert size={64} className="text-white/20 group-hover:scale-110 transition-transform" />
         </motion.div>
-        <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter mb-4 text-center">Elite Protocol <span className="text-white/20">Required.</span></h1>
+        <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter mb-4 text-center">Elite Protocol <span className="text-gradient">Required.</span></h1>
         <p className="text-white/40 text-lg font-medium mb-16 max-w-xl text-center leading-relaxed">
           The 11+ Papers on Demand library is exclusive to our Upgraded Members. 
           Access over 500+ past paper nodes and detailed marking methodology.
         </p>
-        <Button className="h-18 px-12 rounded-3xl bg-white text-black font-black uppercase tracking-widest text-[11px] hover:scale-105 transition-all shadow-[0_0_100px_rgba(255,255,255,0.1)]">
+        <Button className="h-18 px-12 rounded-3xl bg-gradient-to-r from-pink-500 via-purple-600 to-violet-600 text-white font-black uppercase tracking-widest text-[11px] hover:scale-105 transition-all shadow-[0_6px_30px_rgba(168,85,247,0.35)] border-none">
           Upgrade to Premium
         </Button>
       </div>
@@ -132,12 +132,12 @@ export default function PapersOnDemand() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-24 space-y-6"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] text-[10px] font-black uppercase tracking-[0.3em] text-white/40">
-          <Compass size={12} className="text-white/60" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-purple-400/20 bg-purple-500/5 text-[10px] font-black uppercase tracking-[0.3em] text-purple-300/70">
+          <Compass size={12} className="text-purple-400" />
           <span>Academic Vault</span>
         </div>
         <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-white">
-          Papers <span className="text-white/40">on Demand.</span>
+          Papers <span className="text-gradient">on Demand.</span>
         </h1>
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 pt-8">
           <p className="text-white/40 text-lg font-medium max-w-xl leading-relaxed">
@@ -221,7 +221,7 @@ export default function PapersOnDemand() {
                   <div className="flex justify-between items-start mb-10">
                     <div className={cn(
                       "w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-700",
-                      isDone ? "bg-white text-black" : "bg-white/5 text-white/20 group-hover:bg-white group-hover:text-black"
+                      isDone ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white" : "bg-white/5 text-white/20 group-hover:bg-purple-500/20 group-hover:text-purple-300"
                     )}>
                       {isDone ? <Check size={24} strokeWidth={3} /> : <FileText size={24} />}
                     </div>
@@ -237,17 +237,17 @@ export default function PapersOnDemand() {
                   </h3>
 
                   <div className="flex gap-2 mb-10">
-                    <div className="px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] text-[8px] font-black uppercase tracking-widest text-white/30">
+                    <div className="px-3 py-1 rounded-full border border-purple-400/20 bg-purple-500/5 text-[8px] font-black uppercase tracking-widest text-purple-300/60">
                       {paper.subject}
                     </div>
-                    <div className="px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] text-[8px] font-black uppercase tracking-widest text-white/10">
+                    <div className="px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] text-[8px] font-black uppercase tracking-widest text-white/30">
                       {paper.difficulty}
                     </div>
                   </div>
 
                   <div className="mt-auto space-y-3">
                     <Button 
-                      className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[10px] hover:scale-[1.02] transition-all"
+                      className="w-full h-14 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 text-white font-black uppercase tracking-widest text-[10px] hover:scale-[1.02] transition-all shadow-[0_4px_16px_rgba(168,85,247,0.25)] border-none"
                       onClick={() => setViewingPdf(paper.fileUrl)}
                     >
                       Execute Review

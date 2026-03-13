@@ -42,12 +42,12 @@ export default function Activities() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-24 mt-10 space-y-6"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] text-[10px] font-black uppercase tracking-[0.3em] text-white/40">
-          <Compass size={12} className="text-white/60" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-sky-400/20 bg-sky-500/5 text-[10px] font-black uppercase tracking-[0.3em] text-sky-300/70">
+          <Compass size={12} className="text-sky-400" />
           <span>Interactive Protocol</span>
         </div>
         <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-white">
-          Club <span className="text-white/40">Activities.</span>
+          Club <span className="text-gradient">Activities.</span>
         </h1>
         <p className="text-white/40 text-lg font-medium max-w-2xl leading-relaxed">
           Engaging methodological explorations. Elite extracurricular nodes
@@ -61,7 +61,7 @@ export default function Activities() {
           <h2 className="text-2xl font-black text-white uppercase tracking-tight">
             Active Nodes
           </h2>
-          <div className="flex-1 h-px bg-white/5" />
+          <div className="flex-1 h-px bg-gradient-to-r from-sky-400/20 to-transparent" />
         </div>
 
         {loading ? (
@@ -125,7 +125,7 @@ export default function Activities() {
                     )}
 
                     <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between">
-                      <Button className="h-14 px-8 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[10px] hover:scale-[1.02] transition-all">
+                      <Button className="h-14 px-8 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 text-white font-black uppercase tracking-widest text-[10px] hover:scale-[1.02] transition-all shadow-[0_4px_16px_rgba(168,85,247,0.25)] border-none">
                         Execute Activity
                         <ArrowRight
                           size={14}

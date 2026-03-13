@@ -44,7 +44,7 @@ export default function BlogPost() {
     return (
       <div className="page-container flex flex-col items-center justify-center min-h-[70vh]">
         <div className="relative">
-          <div className="w-16 h-16 border-2 border-white/5 border-t-white rounded-full animate-spin" />
+          <div className="w-16 h-16 border-2 border-purple-400/20 border-t-purple-400 rounded-full animate-spin" />
           <div className="absolute inset-0 flex items-center justify-center">
             <Sparkles className="text-white/20 animate-pulse" size={20} />
           </div>
@@ -147,7 +147,7 @@ export default function BlogPost() {
                   onClick={handleCopy}
                   className={cn(
                     "w-full h-16 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all",
-                    copied ? "bg-emerald-500 text-white" : "bg-white text-black hover:scale-[1.02]"
+                    copied ? "bg-emerald-500 text-white" : "bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:scale-[1.02] border-none shadow-[0_4px_16px_rgba(168,85,247,0.30)]"
                   )}
                 >
                   {copied ? "Node Link Copied" : "Extract Article Link"}
@@ -168,12 +168,12 @@ export default function BlogPost() {
       <section className="mt-40 pt-20 border-t border-white/5">
         <div className="flex items-center gap-6 mb-16">
           <h2 className="text-3xl font-black text-white uppercase tracking-tight">Correlated Media</h2>
-          <div className="flex-1 h-px bg-white/5" />
+          <div className="flex-1 h-px bg-gradient-to-r from-purple-400/20 to-transparent" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
            {[1, 2].map((i) => (
              <div key={i} className="p-20 border border-dashed border-white/5 rounded-[4rem] text-center bg-white/[0.01] flex flex-col items-center gap-6 group hover:border-white/20 transition-all cursor-pointer">
-                <div className="w-16 h-16 rounded-3xl bg-white/5 flex items-center justify-center text-white/10 group-hover:bg-white group-hover:text-black transition-all">
+                <div className="w-16 h-16 rounded-3xl bg-white/5 flex items-center justify-center text-white/10 group-hover:bg-gradient-to-r group-hover:from-pink-500 group-hover:to-purple-600 group-hover:text-white transition-all">
                   <ArrowLeft className="rotate-180" size={24} />
                 </div>
                 <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em]">Decoding complementary nodes...</p>
