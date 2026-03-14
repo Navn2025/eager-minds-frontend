@@ -5,12 +5,14 @@ import { AuthProvider } from "./context/AuthContext";
 import "./index.css";
 import App from "./App.tsx";
 
+const appTree = (
+  <BrowserRouter>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  </BrowserRouter>
+);
+
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
-  </StrictMode>,
+  import.meta.env.DEV ? appTree : <StrictMode>{appTree}</StrictMode>,
 );

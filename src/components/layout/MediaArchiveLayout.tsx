@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MediaCard } from "../ui/MediaCard";
 import { cn } from "../../lib/utils";
+import FullscreenNavbar from "./FullscreenNavbar";
 
 const categories = [
   "All",
@@ -54,34 +55,12 @@ export default function MediaArchiveLayout() {
   const [activeCategory, setActiveCategory] = useState("All");
 
   return (
-    <div className="min-h-screen bg-[#0b0b0b] text-white pt-24">
+    <div className="min-h-screen bg-[#0b0b0b] text-white">
       {/* Top Navbar */}
-      <nav className="fixed top-0 left-0 right-0 h-20 border-b border-white/5 flex items-center justify-between px-8 bg-[#0b0b0b] z-[100]">
-        <div className="flex items-center gap-12">
-          <div className="flex items-center gap-2 group cursor-pointer">
-             <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
-                <div className="w-1.5 h-1.5 bg-black rounded-full" />
-             </div>
-             <span className="text-xl font-black tracking-tighter">Media</span>
-          </div>
-          <div className="hidden md:flex items-center gap-8 text-[11px] font-black uppercase tracking-widest text-[#8a8a8a]">
-            {["Work", "Creative Autonomy", "About"].map(link => (
-              <a key={link} href="#" className="hover:text-white transition-colors">{link}</a>
-            ))}
-          </div>
-        </div>
-        <div className="flex items-center gap-6">
-          <span className="text-[11px] font-black uppercase tracking-widest text-[#8a8a8a] cursor-pointer hover:text-white transition-colors">
-            GB // EN
-          </span>
-          <button className="h-10 px-6 rounded-sm border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">
-            Contact
-          </button>
-        </div>
-      </nav>
+      <FullscreenNavbar />
 
       {/* Main Split Content */}
-      <div className="flex flex-col lg:flex-row h-full min-h-[calc(100vh-80px)]">
+      <div className="flex flex-col lg:flex-row h-full min-h-screen pt-24 lg:pt-32">
         {/* Left Side: Navigation (40%) */}
         <div className="lg:w-[40%] xl:w-[35%] px-8 lg:px-16 py-12 lg:pt-20 border-r border-white/5">
           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-12 block">
@@ -92,13 +71,26 @@ export default function MediaArchiveLayout() {
               <motion.button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                whileHover={{ x: 15 }}
                 className={cn(
-                  "text-left text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight transition-all duration-500",
-                  activeCategory === cat ? "text-white" : "text-[#8a8a8a] hover:text-white/60"
+                  "group relative flex items-center gap-4 transition-all duration-500",
+                  "text-[2rem] leading-[0.95] sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight uppercase",
+                  activeCategory === cat
+                    ? "text-white"
+                    : "text-white/45 hover:text-white/85",
                 )}
               >
-                {cat}
+                <motion.span
+                  animate={activeCategory === cat ? { x: 10 } : { x: 0 }}
+                  className="transition-transform duration-500 text-left"
+                >
+                  {cat}
+                </motion.span>
+                {activeCategory === cat && (
+                  <motion.div
+                    layoutId="categoryIndicator"
+                    className="w-2 h-2 rounded-full bg-white/80"
+                  />
+                )}
               </motion.button>
             ))}
           </div>

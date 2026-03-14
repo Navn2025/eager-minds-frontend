@@ -8,9 +8,10 @@ import { cn } from "../../lib/utils";
 
 const navLinks = [
   { to: "/", label: "Home" },
-  { to: "/11-plus-prep", label: "11+ Prep" },
   { to: "/competitions", label: "Competitions" },
   { to: "/arts-craft", label: "Arts & Craft" },
+  { to: "/11-plus-prep", label: "11+ Prep" },
+  { to: "/word-of-the-day", label: "Word of the Day" },
   { to: "/activities", label: "Activities" },
   { to: "/blog", label: "Blog" },
   { to: "/magazines", label: "Magazines" },
@@ -33,14 +34,16 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] md:w-[95%] max-w-7xl z-50">
-      <div className={cn(
-        "flex items-center justify-between px-6 py-3 rounded-full transition-all duration-500",
-        scrolled 
-          ? "bg-[#000d1a]/60 backdrop-blur-xl border border-blue-500/20 shadow-[0_8px_32px_0_rgba(0,13,26,0.8),0_0_15px_rgba(59,130,246,0.1)]" 
-          : "bg-blue-500/5 backdrop-blur-md border border-white/5"
-      )}>
-        <Link 
-          to="/" 
+      <div
+        className={cn(
+          "flex items-center justify-between px-6 py-3 rounded-full transition-all duration-500",
+          scrolled
+            ? "bg-[#000d1a]/60 backdrop-blur-xl border border-blue-500/20 shadow-[0_8px_32px_0_rgba(0,13,26,0.8),0_0_15px_rgba(59,130,246,0.1)]"
+            : "bg-blue-500/5 backdrop-blur-md border border-white/5",
+        )}
+      >
+        <Link
+          to="/"
           className="text-xl font-black tracking-tighter text-white hover:opacity-80 transition-opacity flex items-center gap-2"
         >
           <img
@@ -48,7 +51,9 @@ export default function Navbar() {
             alt="Eager Minds Club logo"
             className="h-12 w-auto max-w-[220px] object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.24)]"
           />
-          <span className="hidden sm:inline text-sm font-semibold tracking-wide">Eager Minds Club</span>
+          <span className="hidden sm:inline text-sm font-semibold tracking-wide">
+            Eager Minds Club
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -70,23 +75,31 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             {isLoggedIn ? (
               <div className="flex items-center gap-2">
-                 <Link to="/dashboard">
-                  <Button variant="ghost" size="sm" className="h-9 rounded-full px-4 text-xs font-bold uppercase tracking-widest gap-2 bg-white/5 border border-white/5 hover:bg-white/10">
+                <Link to="/dashboard">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-9 rounded-full px-4 text-xs font-bold uppercase tracking-widest gap-2 bg-white/5 border border-white/5 hover:bg-white/10"
+                  >
                     <LayoutDashboard size={14} />
                     <span>Dashboard</span>
                   </Button>
                 </Link>
                 {isAdmin && (
                   <Link to="/admin">
-                    <Button variant="outline" size="sm" className="h-9 rounded-full px-4 text-xs font-bold uppercase tracking-widest border-white/20 hover:border-white">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-9 rounded-full px-4 text-xs font-bold uppercase tracking-widest border-white/20 hover:border-white"
+                    >
                       Admin
                     </Button>
                   </Link>
                 )}
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={logout} 
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={logout}
                   className="w-9 h-9 rounded-full text-white/40 hover:bg-white/10 hover:text-white transition-all"
                 >
                   <LogOut size={16} />
@@ -95,12 +108,19 @@ export default function Navbar() {
             ) : (
               <div className="flex items-center gap-3">
                 <Link to="/login">
-                  <Button variant="outline" size="sm" className="h-9 rounded-full px-5 text-[11px] font-bold uppercase tracking-widest border-white/10 hover:border-white transition-all">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-9 rounded-full px-5 text-[11px] font-bold uppercase tracking-widest border-white/10 hover:border-white transition-all"
+                  >
                     Login
                   </Button>
                 </Link>
                 <Link to="/register">
-                  <Button size="sm" className="h-9 rounded-full px-6 text-[11px] font-bold uppercase tracking-widest bg-white text-black hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all">
+                  <Button
+                    size="sm"
+                    className="h-9 rounded-full px-6 text-[11px] font-bold uppercase tracking-widest bg-white text-black hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all"
+                  >
                     Get Started
                   </Button>
                 </Link>
@@ -128,7 +148,7 @@ export default function Navbar() {
             className="absolute top-[120%] left-0 right-0 bg-black/90 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-8 flex flex-col gap-4 shadow-2xl"
           >
             <div className="grid grid-cols-1 gap-2">
-               {navLinks.map((link) => (
+              {navLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
@@ -143,20 +163,40 @@ export default function Navbar() {
             <div className="grid grid-cols-2 gap-3">
               {isLoggedIn ? (
                 <>
-                  <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="col-span-2">
-                    <Button className="w-full h-11 rounded-xl bg-white text-black font-bold uppercase tracking-widest">Dashboard</Button>
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setMobileOpen(false)}
+                    className="col-span-2"
+                  >
+                    <Button className="w-full h-11 rounded-xl bg-white text-black font-bold uppercase tracking-widest">
+                      Dashboard
+                    </Button>
                   </Link>
-                  <Button variant="outline" className="col-span-2 h-11 rounded-xl border-white/10 text-white/40 font-bold uppercase tracking-widest" onClick={() => { logout(); setMobileOpen(false); }}>
+                  <Button
+                    variant="outline"
+                    className="col-span-2 h-11 rounded-xl border-white/10 text-white/40 font-bold uppercase tracking-widest"
+                    onClick={() => {
+                      logout();
+                      setMobileOpen(false);
+                    }}
+                  >
                     Logout
                   </Button>
                 </>
               ) : (
                 <>
                   <Link to="/login" onClick={() => setMobileOpen(false)}>
-                    <Button variant="outline" className="w-full h-11 rounded-xl border-white/10 text-white font-bold uppercase tracking-widest">Login</Button>
+                    <Button
+                      variant="outline"
+                      className="w-full h-11 rounded-xl border-white/10 text-white font-bold uppercase tracking-widest"
+                    >
+                      Login
+                    </Button>
                   </Link>
                   <Link to="/register" onClick={() => setMobileOpen(false)}>
-                    <Button className="w-full h-11 rounded-xl bg-white text-black font-bold uppercase tracking-widest">Join Now</Button>
+                    <Button className="w-full h-11 rounded-xl bg-white text-black font-bold uppercase tracking-widest">
+                      Join Now
+                    </Button>
                   </Link>
                 </>
               )}

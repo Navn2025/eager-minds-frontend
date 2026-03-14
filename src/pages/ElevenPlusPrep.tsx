@@ -1,13 +1,9 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { useSearchParams } from "react-router-dom";
 import api from "../services/api";
-import { useAuth } from "../context/AuthContext";
 import PDFViewer from "../components/ui/PDFViewer";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "../components/ui/Card";
+import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { cn } from "../lib/utils";
@@ -21,7 +17,6 @@ import {
   Sparkles,
   Compass,
   ShieldCheck,
-  ChevronRight,
 } from "lucide-react";
 
 interface Subject {
@@ -29,13 +24,6 @@ interface Subject {
   name: string;
   slug: string;
   _count: { topics: number; worksheets: number };
-}
-
-interface Topic {
-  id: string;
-  name: string;
-  slug: string;
-  _count: { worksheets: number };
 }
 
 interface Worksheet {
@@ -64,16 +52,32 @@ const subjectIcons: Record<string, any> = {
 };
 
 export default function ElevenPlusPrep() {
-  const { isLoggedIn } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialSubject = searchParams.get("subject");
+
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [activeSlug, setActiveSlug] = useState("maths");
-  const [topics, setTopics] = useState<Topic[]>([]);
+  const [activeSlug, setActiveSlug] = useState(initialSubject || "");
   const [worksheets, setWorksheets] = useState<Worksheet[]>([]);
+  const [loading, setLoading] = useState(true);
   const [wordOfDay, setWordOfDay] = useState<WordOfDay | null>(null);
+  const [activeTab, setActiveTab] = useState<"worksheets" | "answers">(
+    "worksheets",
+  );
   const [viewingPdf, setViewingPdf] = useState<{
     url: string;
     title: string;
   } | null>(null);
+
+  const groupedWorksheets = worksheets.reduce(
+    (acc, ws) => {
+      if (!acc[ws.topic.name]) {
+        acc[ws.topic.name] = [];
+      }
+      acc[ws.topic.name].push(ws);
+      return acc;
+    },
+    {} as Record<string, Worksheet[]>,
+  );
 
   useEffect(() => {
     api
@@ -83,7 +87,7 @@ export default function ElevenPlusPrep() {
           ? res.data
           : res.data.subjects || [];
         setSubjects(data);
-        if (data.length > 0) setActiveSlug(data[0].slug);
+        if (data.length > 0 && !activeSlug) setActiveSlug(data[0].slug);
       })
       .catch(() => {
         setSubjects([]);
@@ -92,22 +96,21 @@ export default function ElevenPlusPrep() {
       .get("/prep/word-of-the-day")
       .then((res) => setWordOfDay(res.data))
       .catch(() => {});
-  }, []);
+  }, [activeSlug]);
 
   useEffect(() => {
-    api
-      .get(`/prep/subjects/${activeSlug}/topics`)
-      .then((res) => setTopics(res.data))
-      .catch(() => {});
+    if (!activeSlug) return;
+    setLoading(true);
     api
       .get(`/prep/subjects/${activeSlug}/worksheets`)
       .then((res) => setWorksheets(res.data.worksheets || []))
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, [activeSlug]);
 
-  const markComplete = async (ws: Worksheet) => {
-    if (!isLoggedIn) return;
-    await api.patch(`/prep/worksheets/${ws.id}/complete`);
+  const handleSubjectChange = (slug: string) => {
+    setActiveSlug(slug);
+    setSearchParams({ subject: slug }, { replace: true });
   };
 
   return (
@@ -117,38 +120,60 @@ export default function ElevenPlusPrep() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-20 mt-10 space-y-6"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-purple-400/20 bg-purple-500/5 text-[10px] font-black uppercase tracking-[0.3em] text-purple-300/70">
-          <Compass size={12} className="text-purple-400" />
-          <span>Academic Navigation</span>
+        <div className="flex items-center gap-6">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400 blur-xl opacity-20 rounded-[2rem]" />
+            <div className="relative w-20 h-20 rounded-[2rem] bg-white/[0.02] border border-white/5 flex items-center justify-center p-5 shadow-[0_0_30px_rgba(255,255,255,0.02)]">
+              {subjects.length > 0 && subjectIcons[activeSlug] ? (
+                (() => {
+                  const ActiveIcon = subjectIcons[activeSlug];
+                  return (
+                    <ActiveIcon
+                      size={38}
+                      className="text-white backdrop-blur-sm"
+                    />
+                  );
+                })()
+              ) : (
+                <BookOpen size={38} className="text-white/80" />
+              )}
+            </div>
+          </div>
+          <div>
+            <h1 className="text-4xl md:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400">
+              {subjects.find((s) => s.slug === activeSlug)?.name ||
+                "11+ Studio"}{" "}
+              (11+ Practice)
+            </h1>
+            <p className="subtitle-editorial max-w-2xl mt-4 text-white/50 text-base md:text-lg">
+              Master mathematics with topic-wise worksheets and practice.
+            </p>
+          </div>
         </div>
-        <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-white">
-          11+ <span className="text-gradient">Studio.</span>
-        </h1>
-        <p className="subtitle-editorial max-w-2xl">
-          The ultimate protocol for examination mastery. Advanced study
-          architecture, interactive methodology, and daily cognitive boosters.
-        </p>
       </motion.header>
 
-      <AnimatePresence>
-        {viewingPdf && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-3xl flex items-center justify-center p-4 md:p-10"
-          >
-            <div className="w-full max-w-7xl h-full relative">
-              <PDFViewer
-                url={viewingPdf.url}
-                title={viewingPdf.title}
-                onClose={() => setViewingPdf(null)}
-                className="w-full h-full shadow-[0_0_100px_rgba(255,255,255,0.1)] rounded-[3rem] overflow-hidden border border-white/10"
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {createPortal(
+        <AnimatePresence>
+          {viewingPdf && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[99999] bg-[#050505] backdrop-blur-3xl flex items-center justify-center p-0"
+            >
+              <div className="w-full h-full relative">
+                <PDFViewer
+                  url={viewingPdf.url}
+                  title={viewingPdf.title}
+                  onClose={() => setViewingPdf(null)}
+                  className="w-full h-full overflow-hidden border-none rounded-none"
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
 
       {/* Subject Tabs */}
       <div className="flex flex-wrap gap-4 mb-24">
@@ -161,7 +186,7 @@ export default function ElevenPlusPrep() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              onClick={() => setActiveSlug(s.slug)}
+              onClick={() => handleSubjectChange(s.slug)}
               className={cn(
                 "group relative flex items-center gap-4 px-8 py-6 rounded-3xl border transition-all duration-700 overflow-hidden",
                 isActive
@@ -188,125 +213,153 @@ export default function ElevenPlusPrep() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
-        <div className="lg:col-span-2 space-y-24">
-          {/* Topics Section */}
+        <div className="lg:col-span-2 space-y-16">
+          {/* Segemented Toggle */}
+          <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-2 flex items-center mb-16 w-full lg:w-fit mx-auto lg:mx-0">
+            <button
+              onClick={() => setActiveTab("worksheets")}
+              className={cn(
+                "px-10 py-4 rounded-xl font-bold text-sm transition-all flex-1 lg:flex-none",
+                activeTab === "worksheets"
+                  ? "bg-white/[0.08] text-white shadow-lg"
+                  : "text-white/40 hover:text-white/80 hover:bg-white/[0.04]",
+              )}
+            >
+              Worksheets
+            </button>
+            <button
+              onClick={() => setActiveTab("answers")}
+              className={cn(
+                "px-10 py-4 rounded-xl font-bold text-sm transition-all flex-1 lg:flex-none",
+                activeTab === "answers"
+                  ? "bg-white/[0.08] text-white shadow-lg"
+                  : "text-white/40 hover:text-white/80 hover:bg-white/[0.04]",
+              )}
+            >
+              Answer Sheets
+            </button>
+          </div>
+
           <motion.section
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
+            className="space-y-20"
           >
-            <div className="flex items-center gap-6 mb-10">
-              <h2 className="text-2xl font-black text-white uppercase tracking-tight">
-                Core Curriculum
-              </h2>
-              <div className="flex-1 h-px bg-gradient-to-r from-purple-400/20 to-transparent" />
-            </div>
-            {topics.length > 0 ? (
-              <div className="flex flex-wrap gap-3">
-                {topics.map((t) => (
-                  <div
-                    key={t.id}
-                    className="px-6 py-3 bg-white/[0.01] border border-white/5 rounded-2xl text-white/40 text-[10px] font-black uppercase tracking-widest hover:border-white/20 hover:text-white transition-all cursor-default"
-                  >
-                    {t.name}{" "}
-                    <span className="ml-2 text-white/10">
-                      {t._count.worksheets}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="py-10 border border-dashed border-white/5 rounded-[2rem] text-center">
-                <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em]">
-                  Querying topic nodes...
+            {loading ? (
+              <div className="p-32 border border-dashed border-white/5 rounded-[4rem] text-center bg-white/[0.01] flex flex-col items-center justify-center">
+                <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-6" />
+                <p className="text-white/40 text-sm font-bold tracking-widest uppercase">
+                  Loading worksheets...
                 </p>
               </div>
-            )}
-          </motion.section>
+            ) : Object.keys(groupedWorksheets).length > 0 ? (
+              Object.entries(groupedWorksheets).map(
+                ([topicName, topicWorksheets]) => {
+                  const items = topicWorksheets.filter(
+                    (ws) =>
+                      activeTab === "worksheets" ||
+                      (activeTab === "answers" && ws.answerPdfUrl),
+                  );
 
-          {/* Worksheets Section */}
-          <motion.section
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <div className="flex items-center gap-6 mb-10">
-              <h2 className="text-2xl font-black text-white uppercase tracking-tight">
-                Technical Assets
-              </h2>
-              <div className="flex-1 h-px bg-gradient-to-r from-purple-400/20 to-transparent" />
-            </div>
-            {worksheets.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {worksheets.map((ws, i) => (
-                  <motion.div
-                    key={ws.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                  >
-                    <Card className="matte-card group relative h-full flex flex-col pt-10">
-                      <CardHeader className="p-8 pb-4">
-                        <div className="flex justify-between items-start mb-6">
-                          <div className="px-3 py-1 rounded-full border border-purple-400/20 bg-purple-500/5 text-[9px] font-black uppercase tracking-widest text-purple-300/60">
-                            {ws.difficulty}
-                          </div>
-                          <Badge className="bg-white/5 border border-white/5 text-white/40 text-[8px] font-black uppercase tracking-widest px-3 py-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                            {ws.topic.name}
+                  if (items.length === 0) return null;
+
+                  return (
+                    <div key={topicName} className="space-y-8">
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-4">
+                          <h2 className="text-3xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.3)]">
+                            {topicName}
+                          </h2>
+                          <Badge className="bg-white/5 border border-purple-400/20 text-purple-300 text-[10px] lowercase py-1 px-3">
+                            {activeTab === "worksheets"
+                              ? `${items.length} Worksheets`
+                              : `${items.length} Answers`}
                           </Badge>
                         </div>
-                        <CardTitle className="text-2xl font-black text-white tracking-tighter leading-tight group-hover:translate-x-1 transition-transform">
-                          {ws.title}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="p-8 pt-4 flex-1 flex flex-col justify-between gap-10">
-                        <div className="grid grid-cols-2 gap-4">
-                          <Button
-                            className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:scale-[1.02] transition-all bg-gradient-to-r from-pink-500 to-purple-600 border-none text-white shadow-[0_4px_16px_rgba(168,85,247,0.3)]"
-                            onClick={() =>
-                              setViewingPdf({ url: ws.pdfUrl, title: ws.title })
-                            }
-                          >
-                            Execute Master
-                          </Button>
-                          {ws.answerPdfUrl && (
-                            <Button
-                              variant="outline"
-                              className="h-14 rounded-2xl border-purple-400/20 bg-purple-500/5 text-white/80 font-black uppercase tracking-widest text-[10px] hover:bg-purple-500/15 hover:border-purple-400/40 transition-all"
-                              onClick={() =>
-                                setViewingPdf({
-                                  url: ws.answerPdfUrl!,
-                                  title: `${ws.title} - Answers`,
-                                })
-                              }
-                            >
-                              Answers
-                            </Button>
-                          )}
-                        </div>
+                        <p className="text-white/50 text-sm font-medium">
+                          {activeTab === "worksheets"
+                            ? `Worksheets for ${topicName} practice`
+                            : `Answer sheets for ${topicName} worksheets`}
+                        </p>
+                      </div>
 
-                        {isLoggedIn && (
-                          <button
-                            onClick={() => markComplete(ws)}
-                            className="flex items-center justify-center gap-3 py-6 border-t border-white/5 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-purple-300 transition-all group/btn"
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {items.map((ws) => (
+                          <Card
+                            key={`${ws.id}-${activeTab}`}
+                            className="border-none bg-[#0f0f13] hover:bg-[#13141a] transition-all p-6 rounded-[1.5rem] flex flex-col gap-8 group relative overflow-hidden"
                           >
-                            <ShieldCheck
-                              size={16}
-                              className="group-hover/btn:scale-110 transition-transform"
-                            />
-                            Finalize Status
-                          </button>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
-              </div>
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                            <div className="flex items-start gap-4 z-10">
+                              <div className="mt-1">
+                                <BookOpen
+                                  size={18}
+                                  className="text-purple-400/80"
+                                />
+                              </div>
+                              <h3 className="text-base font-bold text-white/90 leading-snug">
+                                {activeTab === "answers"
+                                  ? `${ws.title} Answers - Sheet 1`
+                                  : ws.title}
+                              </h3>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3 mt-auto z-10">
+                              <Button
+                                variant="ghost"
+                                className="h-10 bg-white/[0.03] border border-white/5 hover:bg-white/10 rounded-xl text-xs font-bold transition-all text-white/80"
+                                onClick={() =>
+                                  setViewingPdf({
+                                    url:
+                                      activeTab === "answers"
+                                        ? ws.answerPdfUrl!
+                                        : ws.pdfUrl,
+                                    title:
+                                      activeTab === "answers"
+                                        ? `${ws.title} - Answers`
+                                        : ws.title,
+                                  })
+                                }
+                              >
+                                <Compass
+                                  size={14}
+                                  className="mr-2 opacity-50"
+                                />{" "}
+                                View
+                              </Button>
+                              <a
+                                href={
+                                  activeTab === "answers"
+                                    ? ws.answerPdfUrl!
+                                    : ws.pdfUrl
+                                }
+                                download
+                                className="h-10 bg-white/[0.03] border border-white/5 hover:bg-white/10 rounded-xl text-xs font-bold transition-all text-white/80 flex items-center justify-center"
+                              >
+                                <ShieldCheck
+                                  size={14}
+                                  className="mr-2 opacity-50"
+                                />{" "}
+                                Download
+                              </a>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                },
+              )
             ) : (
               <div className="p-32 border border-dashed border-white/5 rounded-[4rem] text-center bg-white/[0.01]">
-                <BookOpen size={48} className="mx-auto text-white/5 mb-6" />
-                <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.4em]">
-                  Asset sequence pending for {activeSlug}.
+                <BookOpen size={48} className="mx-auto text-white/10 mb-6" />
+                <p className="text-white/40 text-sm font-bold tracking-widest uppercase">
+                  No Content Available
+                </p>
+                <p className="text-white/20 mt-2 text-xs">
+                  We are currently preparing more materials. Check back soon.
                 </p>
               </div>
             )}
@@ -392,38 +445,6 @@ export default function ElevenPlusPrep() {
               </Card>
             )}
           </motion.section>
-
-          {/* Quick Tip / Promo */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <Card className="p-10 bg-gradient-to-br from-pink-500 via-purple-600 to-violet-700 text-white border-none rounded-[3.5rem] shadow-[0_8px_40px_rgba(168,85,247,0.30)] relative overflow-hidden group">
-              <div className="absolute -bottom-10 -right-10 opacity-10 group-hover:rotate-12 transition-transform duration-1000">
-                <Lightbulb size={120} />
-              </div>
-              <h3 className="text-[10px] font-black uppercase tracking-[0.4em] mb-6 text-white/70">
-                Execution Tip
-              </h3>
-              <p className="text-lg font-black leading-tight tracking-tighter mb-10">
-                Cognitive iteration on verbal reasoning builds neural efficiency
-                required for the 11+ protocol.
-              </p>
-              <Button
-                variant="ghost"
-                className="h-16 w-full rounded-2xl bg-white/10 border border-white/20 text-white hover:bg-white/20 group transition-all"
-              >
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">
-                  Access Protocol
-                </span>
-                <ChevronRight
-                  className="ml-2 group-hover:translate-x-1 transition-all"
-                  size={16}
-                />
-              </Button>
-            </Card>
-          </motion.div>
         </aside>
       </div>
     </div>

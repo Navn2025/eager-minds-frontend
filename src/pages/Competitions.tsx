@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { Card, CardContent } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
@@ -18,6 +19,7 @@ interface Competition {
 }
 
 export default function Competitions() {
+  const navigate = useNavigate();
   const [upcoming, setUpcoming] = useState<Competition[]>([]);
   const [past, setPast] = useState<Competition[]>([]);
   const [loading, setLoading] = useState(true);
@@ -104,7 +106,7 @@ export default function Competitions() {
         </div>
 
         <CardContent className="p-6 md:p-10 pt-4 flex flex-col flex-grow">
-          <h3 className="text-2xl md:text-3xl font-black text-white tracking-tighter mb-4 group-hover:translate-x-1 transition-transform uppercase">
+          <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight break-words mb-4 group-hover:translate-x-1 transition-transform uppercase">
             {comp.title}
           </h3>
           <p className="text-white/40 text-sm font-medium leading-relaxed mb-8 flex-grow">
@@ -123,10 +125,10 @@ export default function Competitions() {
               </div>
             )}
 
-            {!isPast && comp.registrationLink ? (
+            {!isPast ? (
               <Button
                 className="w-full h-14 md:h-16 rounded-xl md:rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 text-white font-black uppercase tracking-widest hover:scale-[1.02] transition-all shadow-[0_4px_20px_rgba(168,85,247,0.3)] group/btn border-none"
-                onClick={() => window.open(comp.registrationLink!, "_blank")}
+                onClick={() => navigate("/dashboard")}
               >
                 Access Portal
                 <ArrowRight

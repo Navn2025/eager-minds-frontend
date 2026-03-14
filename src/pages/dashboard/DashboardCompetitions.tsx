@@ -6,7 +6,6 @@ import {
   Users,
   Medal,
   ChevronRight,
-  Award,
   Zap,
   Star,
 } from "lucide-react";
@@ -105,23 +104,79 @@ export default function DashboardCompetitions() {
     },
   ];
 
+  const deriveStatus = (startDate?: string, endDate?: string) => {
+    const now = new Date().getTime();
+    const start = startDate ? new Date(startDate).getTime() : NaN;
+    const end = endDate ? new Date(endDate).getTime() : NaN;
+
+    if (!Number.isNaN(start) && now < start) return "upcoming" as const;
+    if (
+      !Number.isNaN(start) &&
+      !Number.isNaN(end) &&
+      now >= start &&
+      now <= end
+    ) {
+      return "active" as const;
+    }
+    if (
+      !Number.isNaN(start) &&
+      Number.isNaN(end) &&
+      now >= start &&
+      now <= start + 3 * 24 * 60 * 60 * 1000
+    ) {
+      return "active" as const;
+    }
+    return "completed" as const;
+  };
+
   useEffect(() => {
     api
       .get("/competitions")
       .then((res) => {
-        const mapped = (res.data || []).map(
-          (c: {
-            id: string;
-            title: string;
-            description?: string;
-            startDate?: string;
-            endDate?: string;
-          }) => ({
-            ...c,
-            category: "Academic",
-            participants: Math.floor(Math.random() * 500) + 50,
-            status: "active" as const,
-          }),
+        const raw = Array.isArray(res.data)
+          ? res.data
+          : res.data?.competitions || [];
+        const mapped = raw.map(
+          (
+            c: {
+              id: string;
+              title: string;
+              description?: string;
+              category?: string;
+              participants?: number;
+              status?: "upcoming" | "active" | "completed";
+              eventDate?: string;
+              startDate?: string;
+              endDate?: string;
+              prize?: string;
+              userRank?: number;
+              userScore?: number;
+              registrationLink?: string;
+            },
+            i: number,
+          ) => {
+            const startDate =
+              c.startDate || c.eventDate || new Date().toISOString();
+            const endDate = c.endDate || c.eventDate || startDate;
+            return {
+              id: c.id,
+              title: c.title,
+              description:
+                c.description || "Competition details will be announced soon.",
+              category: c.category || "Academic",
+              startDate,
+              endDate,
+              participants:
+                typeof c.participants === "number"
+                  ? c.participants
+                  : 120 + i * 35,
+              status: c.status || deriveStatus(startDate, endDate),
+              prize: c.prize,
+              userRank: c.userRank,
+              userScore: c.userScore,
+              isRegistered: Boolean(c.registrationLink),
+            };
+          },
         );
         setCompetitions(mapped.length ? mapped : getMockData());
         setLoading(false);
@@ -225,7 +280,10 @@ export default function DashboardCompetitions() {
             <Card className="border-white/5 bg-white/[0.01] rounded-[2rem]">
               <CardContent className="p-6 md:p-8 flex items-center gap-4 md:gap-6">
                 <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white/5 flex items-center justify-center shrink-0">
-                  <stat.icon size={20} className={cn("md:w-6 md:h-6", stat.color)} />
+                  <stat.icon
+                    size={20}
+                    className={cn("md:w-6 md:h-6", stat.color)}
+                  />
                 </div>
                 <div>
                   <div className="text-2xl md:text-3xl font-black tracking-tighter text-white">
@@ -240,45 +298,6 @@ export default function DashboardCompetitions() {
           </motion.div>
         ))}
       </div>
-
-      {/* Your Rankings Banner */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.2 }}
-      >
-        <Card className="bg-gradient-to-r from-amber-500/10 to-amber-500/5 border-amber-500/20 rounded-[2rem] md:rounded-[2.5rem]">
-          <CardContent className="p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 text-center md:text-left">
-            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-amber-500 text-black flex items-center justify-center shrink-0">
-                <Award size={32} className="md:w-9 md:h-9" />
-              </div>
-              <div>
-                <h3 className="text-xl md:text-2xl font-black text-white mb-1">
-                  Your Best Rank: #8
-                </h3>
-                <p className="text-white/60 font-medium text-sm md:text-base">
-                  Science Quiz Championship - Top 1%
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 md:gap-4">
-              <div className="text-center px-4 md:px-6 py-2 md:py-3 bg-white/5 rounded-xl">
-                <div className="text-xl md:text-2xl font-black text-white">3</div>
-                <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-widest text-white/40">
-                  Participated
-                </p>
-              </div>
-              <div className="text-center px-4 md:px-6 py-2 md:py-3 bg-white/5 rounded-xl">
-                <div className="text-xl md:text-2xl font-black text-white">86%</div>
-                <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-widest text-white/40">
-                  Avg Score
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
 
       {/* Filters */}
       <div className="flex gap-2 flex-wrap">
@@ -366,30 +385,17 @@ export default function DashboardCompetitions() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between md:justify-end gap-6 md:gap-8 pt-4 md:pt-0 border-t md:border-t-0 border-white/5">
-                    <div className="flex items-center gap-4 md:gap-6">
-                      {competition.userRank && (
-                        <div className="text-left md:text-right">
-                          <div className="text-xl md:text-2xl font-black text-white">
-                            #{competition.userRank}
-                          </div>
-                          <p className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white/40">
-                            Rank
-                          </p>
-                        </div>
-                      )}
-                      {competition.userScore && (
-                        <div className="text-left md:text-right">
-                          <div className="text-xl md:text-2xl font-black text-emerald-500">
-                            {competition.userScore}%
-                          </div>
-                          <p className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white/40">
-                            Score
-                          </p>
-                        </div>
-                      )}
-                    </div>
+                  <div className="flex items-center justify-end gap-6 md:gap-8 pt-4 md:pt-0 border-t md:border-t-0 border-white/5">
                     <Button
+                      onClick={() => {
+                        if (competition.status === "completed") {
+                          alert("Results are being tallied. Check back soon.");
+                        } else if (competition.isRegistered) {
+                          alert(`Entering portal for: ${competition.title}`);
+                        } else {
+                          alert(`Registration requested for: ${competition.title}`);
+                        }
+                      }}
                       className={cn(
                         "h-12 md:h-14 px-5 md:px-6 rounded-xl font-bold text-xs md:text-sm uppercase tracking-wider transition-all min-w-[100px] md:min-w-[120px]",
                         competition.status === "completed"

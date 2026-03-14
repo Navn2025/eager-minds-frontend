@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import {
   FileText,
@@ -7,13 +8,13 @@ import {
   Filter,
   Search,
   ChevronRight,
-  Star,
   BookOpen,
 } from "lucide-react";
 import { Card, CardContent } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import api from "../../services/api";
 import { cn } from "../../lib/utils";
+import PDFViewer from "../../components/ui/PDFViewer";
 
 interface Worksheet {
   id: string;
@@ -22,8 +23,9 @@ interface Worksheet {
   difficulty: string;
   questionCount: number;
   duration: number;
+  pdfUrl?: string;
+  answerPdfUrl?: string;
   completed?: boolean;
-  score?: number;
 }
 
 export default function DashboardWorksheets() {
@@ -31,12 +33,64 @@ export default function DashboardWorksheets() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "completed" | "pending">("all");
   const [search, setSearch] = useState("");
+  const [viewingPdf, setViewingPdf] = useState<string | null>(null);
+  const [selectedTitle, setSelectedTitle] = useState<string>("");
 
   useEffect(() => {
-    api
-      .get("/prep/worksheets")
-      .then((res) => {
-        setWorksheets(res.data || []);
+    Promise.allSettled([
+      api.get("/prep/worksheets"),
+      api.get("/prep/dashboard"),
+    ])
+      .then(([worksheetsRes, dashboardRes]) => {
+        if (worksheetsRes.status !== "fulfilled") {
+          throw new Error("Failed to load worksheets");
+        }
+
+        const worksheetData = worksheetsRes.value.data;
+        const raw = Array.isArray(worksheetData)
+          ? worksheetData
+          : worksheetData?.worksheets || [];
+
+        const completedWorksheetIds =
+          dashboardRes.status === "fulfilled"
+            ? new Set(
+                (dashboardRes.value.data?.completions || [])
+                  .filter(
+                    (c: { itemType?: string; itemId?: string }) =>
+                      c.itemType === "worksheet",
+                  )
+                  .map((c: { itemId?: string }) => c.itemId)
+                  .filter(Boolean),
+              )
+            : new Set<string>();
+
+        const mapped = raw.map(
+          (w: {
+            id: string;
+            title: string;
+            difficulty?: string;
+            pdfUrl?: string;
+            answerPdfUrl?: string;
+            subject?: { name?: string };
+            topic?: { name?: string };
+            completed?: boolean;
+          }) => ({
+            id: w.id,
+            title: w.title,
+            subjectName: w.subject?.name || w.topic?.name || "General",
+            difficulty:
+              w.difficulty?.charAt(0).toUpperCase() +
+                (w.difficulty?.slice(1) || "") || "Medium",
+            // Backend worksheet schema does not store these fields yet.
+            questionCount: 0,
+            duration: 0,
+            pdfUrl: w.pdfUrl || "",
+            answerPdfUrl: w.answerPdfUrl || "",
+            completed: completedWorksheetIds.has(w.id) || Boolean(w.completed),
+          }),
+        );
+
+        setWorksheets(mapped);
         setLoading(false);
       })
       .catch(() => {
@@ -49,8 +103,8 @@ export default function DashboardWorksheets() {
             difficulty: "Medium",
             questionCount: 25,
             duration: 45,
+            pdfUrl: "",
             completed: true,
-            score: 88,
           },
           {
             id: "2",
@@ -59,8 +113,8 @@ export default function DashboardWorksheets() {
             difficulty: "Easy",
             questionCount: 20,
             duration: 30,
+            pdfUrl: "",
             completed: true,
-            score: 92,
           },
           {
             id: "3",
@@ -69,6 +123,7 @@ export default function DashboardWorksheets() {
             difficulty: "Hard",
             questionCount: 30,
             duration: 60,
+            pdfUrl: "",
             completed: false,
           },
           {
@@ -78,6 +133,7 @@ export default function DashboardWorksheets() {
             difficulty: "Medium",
             questionCount: 25,
             duration: 40,
+            pdfUrl: "",
             completed: false,
           },
           {
@@ -87,6 +143,7 @@ export default function DashboardWorksheets() {
             difficulty: "Hard",
             questionCount: 50,
             duration: 90,
+            pdfUrl: "",
             completed: false,
           },
         ]);
@@ -94,7 +151,48 @@ export default function DashboardWorksheets() {
       });
   }, []);
 
-  const filteredWorksheets = worksheets.filter((w) => {
+  const openWorksheet = (worksheet: Worksheet): boolean => {
+    const targetUrl = worksheet.completed
+      ? worksheet.answerPdfUrl || worksheet.pdfUrl
+      : worksheet.pdfUrl;
+
+    if (!targetUrl) {
+      alert("This worksheet does not have a PDF file linked yet.");
+      return false;
+    }
+
+    setViewingPdf(targetUrl);
+    setSelectedTitle(
+      worksheet.completed
+        ? `${worksheet.title} - Review`
+        : `${worksheet.title} - Practice`,
+    );
+    return true;
+  };
+
+  const markComplete = async (worksheet: Worksheet) => {
+    if (worksheet.completed) {
+      return;
+    }
+
+    try {
+      await api.patch(`/prep/worksheets/${worksheet.id}/complete`);
+      setWorksheets((prev) =>
+        prev.map((w) =>
+          w.id === worksheet.id
+            ? {
+                ...w,
+                completed: true,
+              }
+            : w,
+        ),
+      );
+    } catch (error) {
+      console.error("Failed to mark worksheet complete", error);
+    }
+  };
+
+  const filteredWorksheets = (worksheets || []).filter((w) => {
     const matchesFilter =
       filter === "all" ||
       (filter === "completed" && w.completed) ||
@@ -105,12 +203,7 @@ export default function DashboardWorksheets() {
     return matchesFilter && matchesSearch;
   });
 
-  const completedCount = worksheets.filter((w) => w.completed).length;
-  const avgScore =
-    worksheets
-      .filter((w) => w.score)
-      .reduce((acc, w) => acc + (w.score || 0), 0) /
-    (worksheets.filter((w) => w.score).length || 1);
+  const completedCount = (worksheets || []).filter((w) => w.completed).length;
 
   if (loading) {
     return (
@@ -122,6 +215,22 @@ export default function DashboardWorksheets() {
 
   return (
     <div className="space-y-12 pb-32 pt-10">
+      {viewingPdf &&
+        selectedTitle &&
+        createPortal(
+          <div className="fixed inset-0 z-[99999] bg-[#050505] backdrop-blur-3xl flex items-center justify-center p-0">
+            <PDFViewer
+              url={viewingPdf}
+              title={selectedTitle}
+              onClose={() => {
+                setViewingPdf(null);
+                setSelectedTitle("");
+              }}
+              className="w-full h-full border-none rounded-none"
+            />
+          </div>,
+          document.body,
+        )}
       <motion.header
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -141,7 +250,7 @@ export default function DashboardWorksheets() {
       </motion.header>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[
           {
             label: "Total Worksheets",
@@ -149,11 +258,6 @@ export default function DashboardWorksheets() {
             icon: BookOpen,
           },
           { label: "Completed", value: completedCount, icon: CheckCircle2 },
-          {
-            label: "Avg. Score",
-            value: `${Math.round(avgScore)}%`,
-            icon: Star,
-          },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -263,22 +367,22 @@ export default function DashboardWorksheets() {
                       <span className="flex items-center gap-1">
                         <Clock size={12} /> {worksheet.duration} min
                       </span>
-                      <span>{worksheet.questionCount} Questions</span>
+                      <span>
+                        {worksheet.questionCount > 0
+                          ? `${worksheet.questionCount} Questions`
+                          : "Practice Set"}
+                      </span>
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  {worksheet.score && (
-                    <div className="text-right">
-                      <div className="text-2xl font-black text-white">
-                        {worksheet.score}%
-                      </div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-emerald-500">
-                        Score
-                      </p>
-                    </div>
-                  )}
                   <Button
+                    onClick={async () => {
+                      const opened = openWorksheet(worksheet);
+                      if (opened) {
+                        await markComplete(worksheet);
+                      }
+                    }}
                     className={cn(
                       "h-14 px-6 rounded-xl font-bold text-sm uppercase tracking-wider transition-all",
                       worksheet.completed

@@ -5,6 +5,8 @@ import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { Play, Sparkles, Paintbrush } from "lucide-react";
 import { motion } from "framer-motion";
+import BlueprintModal from "../components/ui/BlueprintModal";
+import VideoModal from "../components/ui/VideoModal";
 
 interface Project {
   id: string;
@@ -18,6 +20,9 @@ interface Project {
 export default function ArtsCraft() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
+  const [activeBlueprint, setActiveBlueprint] = useState<Project | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -97,10 +102,7 @@ export default function ArtsCraft() {
                       {project.videoUrl && (
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                           <div
-                            onClick={() =>
-                              project.videoUrl &&
-                              window.open(project.videoUrl, "_blank")
-                            }
+                            onClick={() => setActiveVideoUrl(project.videoUrl)}
                             className="w-16 h-16 rounded-full bg-white text-black flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shadow-2xl"
                           >
                             <Play size={24} fill="currentColor" />
@@ -137,16 +139,15 @@ export default function ArtsCraft() {
                       {project.videoUrl && (
                         <Button
                           variant="outline"
-                          onClick={() =>
-                            project.videoUrl &&
-                            window.open(project.videoUrl, "_blank")
-                          }
+                          onClick={() => setActiveVideoUrl(project.videoUrl)}
                           className="h-14 font-black uppercase tracking-widest text-[10px] flex-1 rounded-2xl border-purple-400/20 bg-purple-500/5 text-white/80 hover:bg-purple-500/15 hover:border-purple-400/40 transition-all"
                         >
                           <Play size={14} className="mr-2" /> Tutorial
                         </Button>
                       )}
-                      <Button className="h-14 font-black uppercase tracking-widest text-[10px] flex-1 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 text-white border-none hover:scale-[1.02] transition-all shadow-[0_4px_16px_rgba(168,85,247,0.25)]">
+                      <Button 
+                        onClick={() => setActiveBlueprint(project)}
+                        className="h-14 font-black uppercase tracking-widest text-[10px] flex-1 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 text-white border-none hover:scale-[1.02] transition-all shadow-[0_4px_16px_rgba(168,85,247,0.25)]">
                         Full Blueprint
                       </Button>
                     </div>
@@ -173,6 +174,19 @@ export default function ArtsCraft() {
           </div>
         )}
       </section>
+
+      {/* Render Modals at the top level */}
+      <VideoModal
+        isOpen={!!activeVideoUrl}
+        onClose={() => setActiveVideoUrl(null)}
+        videoUrl={activeVideoUrl || ""}
+      />
+
+      <BlueprintModal
+        isOpen={!!activeBlueprint}
+        onClose={() => setActiveBlueprint(null)}
+        project={activeBlueprint}
+      />
     </div>
   );
 }

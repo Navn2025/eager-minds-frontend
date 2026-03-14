@@ -11,37 +11,43 @@ import {
   Mail,
   Star,
   Book,
+  House,
   ChevronRight,
   LogOut,
-  X
+  X,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
 
 const navigation = [
   {
-    title: "Intelligence",
+    title: "Overview",
     items: [
       { icon: BarChart3, label: "Analytics", to: "/admin" },
+      { icon: FileText, label: "Content", to: "/admin/content" },
+      { icon: Users, label: "Users", to: "/admin/users" },
       { icon: Mail, label: "Enquiries", to: "/admin/enquiries" },
     ],
   },
   {
-    title: "Core Assets",
+    title: "11+ Prep",
     items: [
-      { icon: Users, label: "Users", to: "/admin/users" },
       { icon: BookOpen, label: "Subjects", to: "/admin/subjects" },
       { icon: FileText, label: "Papers", to: "/admin/papers" },
       { icon: Book, label: "Vocabulary", to: "/admin/vocabulary" },
     ],
   },
   {
-    title: "Engagement",
+    title: "Main Site Features",
     items: [
-      { icon: Trophy, label: "Contests", to: "/admin/competitions" },
+      { icon: Trophy, label: "Competitions", to: "/admin/competitions" },
+      { icon: Star, label: "Arts & Craft", to: "/admin/arts-craft" },
+      { icon: Calendar, label: "Activities", to: "/admin/activities" },
       { icon: Calendar, label: "Events", to: "/admin/events" },
       { icon: MessageSquare, label: "Blog", to: "/admin/blog" },
-      { icon: Star, label: "Feedback", to: "/admin/testimonials" },
+      { icon: BookOpen, label: "Magazines", to: "/admin/magazines" },
+      { icon: MessageSquare, label: "FAQs", to: "/admin/faqs" },
+      { icon: Star, label: "Testimonials", to: "/admin/testimonials" },
     ],
   },
 ];
@@ -59,7 +65,11 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     <aside className="w-80 border-r border-white/5 bg-surface flex flex-col h-full relative overflow-hidden shrink-0">
       {/* Admin Brand */}
       <div className="p-10 flex items-center justify-between">
-        <Link to="/" onClick={onClose} className="flex items-center gap-4 group">
+        <Link
+          to="/"
+          onClick={onClose}
+          className="flex items-center gap-4 group"
+        >
           <img
             src="/whitethemelogo.svg"
             alt="Eager Minds Club logo"
@@ -69,7 +79,10 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             Admin Panel
           </span>
         </Link>
-        <button onClick={onClose} className="lg:hidden text-white/40 hover:text-white transition-colors">
+        <button
+          onClick={onClose}
+          className="lg:hidden text-white/40 hover:text-white transition-colors"
+        >
           <X size={20} />
         </button>
       </div>
@@ -129,6 +142,20 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
       {/* System Actions */}
       <div className="p-8 border-t border-white/5">
         <div className="space-y-2">
+          <Link
+            to="/"
+            onClick={onClose}
+            className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 group text-text-secondary hover:text-white hover:bg-white/[0.01]"
+          >
+            <House
+              size={18}
+              className="text-white/20 group-hover:text-white/60"
+            />
+            <span className="text-[11px] font-black uppercase tracking-widest">
+              Main Site
+            </span>
+          </Link>
+
           <button
             onClick={() => {
               logout();
@@ -166,9 +193,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex h-full">
-        {SidebarContent}
-      </div>
+      <div className="hidden lg:flex h-full">{SidebarContent}</div>
 
       {/* Mobile Sidebar */}
       <AnimatePresence>

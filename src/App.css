@@ -15,7 +15,12 @@
   .section-title) are NOT blocked by a hardcoded white override.
   Fallback is still near-white via --color-text-primary.
 */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: inherit;
   letter-spacing: -0.02em;
 }
@@ -25,13 +30,12 @@ h1, h2, h3, h4, h5, h6 {
   transition: all 0.3s ease;
 }
 .hover-glow:hover {
-  text-shadow: 0 0 12px rgba(236, 72, 153, 0.45), 0 0 24px rgba(168, 85, 247, 0.25);
+  text-shadow:
+    0 0 12px rgba(236, 72, 153, 0.45),
+    0 0 24px rgba(168, 85, 247, 0.25);
 }
 
-/* Subtle brand-tinted grid on page sections */
+/* Keep section containers clean; no grid texture. */
 .page-container {
-  background-image:
-    linear-gradient(rgba(168, 85, 247, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(168, 85, 247, 0.025) 1px, transparent 1px);
-  background-size: 48px 48px;
+  background-image: none;
 }

@@ -3,12 +3,9 @@ import { motion } from "framer-motion";
 import {
   LineChart,
   TrendingUp,
-  Target,
-  Award,
   Calendar,
   Clock,
   Flame,
-  ArrowUpRight,
   BookOpen,
   CheckCircle2,
 } from "lucide-react";
@@ -18,12 +15,129 @@ import { cn } from "../../lib/utils";
 
 interface ProgressData {
   streakDays: number;
-  totalHours: number;
+  totalStudyMinutes: number;
+  studyTimeLabel: string;
   worksheetsCompleted: number;
-  averageScore: number;
-  weeklyProgress: { day: string; hours: number; score: number }[];
+  weeklyProgress: { day: string; hours: number }[];
   subjectProgress: { name: string; progress: number; color: string }[];
-  recentActivity: { date: string; activity: string; score?: number }[];
+  recentActivity: { date: string; activity: string; itemType: string }[];
+}
+
+const progressPalette = [
+  "bg-blue-500",
+  "bg-emerald-500",
+  "bg-amber-500",
+  "bg-purple-500",
+  "bg-pink-500",
+  "bg-cyan-500",
+];
+
+function getStreakDays(dateStrings: string[]): number {
+  const uniqueDays = Array.from(
+    new Set(dateStrings.map((d) => new Date(d).toDateString())),
+  );
+
+  const daySet = new Set(uniqueDays);
+  let streak = 0;
+  const cursor = new Date();
+  cursor.setHours(0, 0, 0, 0);
+
+  while (daySet.has(cursor.toDateString())) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  return streak;
+}
+
+function formatStudyTime(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+
+  if (hours === 0) return `${mins}m`;
+  if (mins === 0) return `${hours}h`;
+  return `${hours}h ${mins}m`;
+}
+
+function normalizeProgressData(raw: any): ProgressData {
+  const allCompletions = Array.isArray(raw?.completions) ? raw.completions : [];
+  const worksheetCompletions = Array.isArray(raw?.completions)
+    ? raw.completions.filter(
+        (c: { itemType?: string }) => c.itemType === "worksheet",
+      )
+    : [];
+
+  const completionDates = worksheetCompletions
+    .map((c: { completedAt?: string }) => c.completedAt)
+    .filter(Boolean) as string[];
+
+  const totalCompleted = worksheetCompletions.length;
+  const streakDays = getStreakDays(completionDates);
+  const totalStudyMinutes = allCompletions.reduce(
+    (acc: number, c: { itemType?: string }) => {
+      if (c.itemType === "paper") return acc + 60;
+      if (c.itemType === "worksheet") return acc + 45;
+      return acc + 30;
+    },
+    0,
+  );
+  const studyTimeLabel = formatStudyTime(totalStudyMinutes);
+
+  const progressList = Array.isArray(raw?.progress) ? raw.progress : [];
+
+  const subjectProgress = progressList.map(
+    (p: { subjectName?: string; percentage?: number }, i: number) => ({
+      name: p.subjectName || `Subject ${i + 1}`,
+      progress: p.percentage || 0,
+      color: progressPalette[i % progressPalette.length],
+    }),
+  );
+
+  const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const now = new Date();
+  const weeklyProgress = dayLabels.map((label, offset) => {
+    const target = new Date(now);
+    target.setDate(now.getDate() - (6 - offset));
+    target.setHours(0, 0, 0, 0);
+
+    const next = new Date(target);
+    next.setDate(target.getDate() + 1);
+
+    const dayCount = completionDates.filter((d) => {
+      const dt = new Date(d).getTime();
+      return dt >= target.getTime() && dt < next.getTime();
+    }).length;
+
+    return {
+      day: label,
+      hours: Number((dayCount * 0.75).toFixed(1)),
+    };
+  });
+
+  const recentActivity = worksheetCompletions
+    .slice(0, 8)
+    .map((c: { completedAt?: string; itemId?: string; itemType?: string }) => {
+      const when = c.completedAt ? new Date(c.completedAt) : new Date();
+      const dayText = when.toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+      });
+      return {
+        date: dayText,
+        activity: `Completed worksheet ${c.itemId?.slice(0, 8) || ""}`,
+        itemType: c.itemType || "worksheet",
+      };
+    });
+
+  return {
+    streakDays,
+    totalStudyMinutes,
+    studyTimeLabel,
+    worksheetsCompleted: totalCompleted,
+    weeklyProgress,
+    subjectProgress,
+    recentActivity,
+  };
 }
 
 export default function DashboardProgress() {
@@ -32,26 +146,26 @@ export default function DashboardProgress() {
 
   useEffect(() => {
     api
-      .get("/prep/progress")
+      .get("/prep/dashboard")
       .then((res) => {
-        setData(res.data);
+        setData(normalizeProgressData(res.data));
         setLoading(false);
       })
       .catch(() => {
         // Mock data for demo
         setData({
           streakDays: 12,
-          totalHours: 48,
+          totalStudyMinutes: 48 * 60,
+          studyTimeLabel: "48h",
           worksheetsCompleted: 23,
-          averageScore: 87,
           weeklyProgress: [
-            { day: "Mon", hours: 2.5, score: 85 },
-            { day: "Tue", hours: 1.5, score: 90 },
-            { day: "Wed", hours: 3, score: 82 },
-            { day: "Thu", hours: 2, score: 88 },
-            { day: "Fri", hours: 2.5, score: 91 },
-            { day: "Sat", hours: 4, score: 85 },
-            { day: "Sun", hours: 1, score: 89 },
+            { day: "Mon", hours: 2.5 },
+            { day: "Tue", hours: 1.5 },
+            { day: "Wed", hours: 3 },
+            { day: "Thu", hours: 2 },
+            { day: "Fri", hours: 2.5 },
+            { day: "Sat", hours: 4 },
+            { day: "Sun", hours: 1 },
           ],
           subjectProgress: [
             { name: "Mathematics", progress: 78, color: "bg-blue-500" },
@@ -67,27 +181,27 @@ export default function DashboardProgress() {
             {
               date: "Today",
               activity: "Completed Mathematics Paper A",
-              score: 92,
+              itemType: "worksheet",
             },
             {
               date: "Today",
               activity: "Started English Comprehension",
-              score: undefined,
+              itemType: "worksheet",
             },
             {
               date: "Yesterday",
               activity: "Completed Verbal Reasoning Quiz",
-              score: 88,
+              itemType: "worksheet",
             },
             {
               date: "Yesterday",
               activity: "Achieved 10-day streak badge",
-              score: undefined,
+              itemType: "worksheet",
             },
             {
               date: "2 days ago",
               activity: "Completed Non-Verbal Patterns",
-              score: 95,
+              itemType: "worksheet",
             },
           ],
         });
@@ -103,7 +217,11 @@ export default function DashboardProgress() {
     );
   }
 
-  const maxHours = Math.max(...data.weeklyProgress.map((d) => d.hours));
+  const maxHours =
+    data && data.weeklyProgress
+      ? Math.max(...(data?.weeklyProgress || []).map((d) => d.hours))
+      : 0;
+  const safeMaxHours = Math.max(maxHours, 1);
 
   return (
     <div className="space-y-12 pb-32 pt-10">
@@ -125,7 +243,7 @@ export default function DashboardProgress() {
       </motion.header>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {[
           {
             label: "Day Streak",
@@ -136,9 +254,9 @@ export default function DashboardProgress() {
           },
           {
             label: "Study Time",
-            value: data.totalHours,
+            value: data.studyTimeLabel,
             icon: Clock,
-            suffix: "hours",
+            suffix: "",
             color: "text-blue-500",
           },
           {
@@ -147,14 +265,6 @@ export default function DashboardProgress() {
             icon: CheckCircle2,
             suffix: "sheets",
             color: "text-emerald-500",
-          },
-          {
-            label: "Avg. Score",
-            value: data.averageScore,
-            icon: Target,
-            suffix: "%",
-            color: "text-purple-500",
-            highlight: true,
           },
         ].map((stat, i) => (
           <motion.div
@@ -166,34 +276,33 @@ export default function DashboardProgress() {
             <Card
               className={cn(
                 "border-white/5 rounded-[2rem] h-full transition-all",
-                stat.highlight ? "bg-white" : "bg-white/[0.01]",
+                "bg-white/[0.01]",
               )}
             >
               <CardContent className="p-8">
                 <div
                   className={cn(
                     "w-12 h-12 rounded-xl flex items-center justify-center mb-6",
-                    stat.highlight ? "bg-black text-white" : "bg-white/5",
+                    "bg-white/5",
                   )}
                 >
-                  <stat.icon
-                    size={22}
-                    className={stat.highlight ? "" : stat.color}
-                  />
+                  <stat.icon size={22} className={stat.color} />
                 </div>
                 <div
                   className={cn(
                     "text-4xl font-black tracking-tighter mb-1",
-                    stat.highlight ? "text-black" : "text-white",
+                    "text-white",
                   )}
                 >
                   {stat.value}
-                  <span className="text-lg ml-1">{stat.suffix}</span>
+                  {stat.suffix && (
+                    <span className="text-lg ml-1">{stat.suffix}</span>
+                  )}
                 </div>
                 <p
                   className={cn(
                     "text-[10px] font-black uppercase tracking-[0.2em]",
-                    stat.highlight ? "text-black/40" : "text-white/40",
+                    "text-white/40",
                   )}
                 >
                   {stat.label}
@@ -223,11 +332,11 @@ export default function DashboardProgress() {
               </div>
             </div>
             <div className="flex items-end justify-between gap-2 md:gap-4 h-40 md:h-48 pt-4">
-              {data.weeklyProgress.map((day, i) => (
+              {(data?.weeklyProgress || []).map((day, i) => (
                 <motion.div
                   key={day.day}
                   initial={{ height: 0 }}
-                  animate={{ height: `${(day.hours / maxHours) * 100}%` }}
+                  animate={{ height: `${(day.hours / safeMaxHours) * 100}%` }}
                   transition={{ delay: 0.1 * i, duration: 0.5 }}
                   className="flex-1 flex flex-col items-center gap-2 md:gap-3 group"
                 >
@@ -254,7 +363,7 @@ export default function DashboardProgress() {
               Recent Activity
             </h3>
             <div className="space-y-4">
-              {data.recentActivity.map((activity, i) => (
+              {(data?.recentActivity || []).map((activity, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, x: -20 }}
@@ -265,12 +374,12 @@ export default function DashboardProgress() {
                   <div
                     className={cn(
                       "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0",
-                      activity.score
+                      activity.itemType === "worksheet"
                         ? "bg-emerald-500/10 text-emerald-500"
                         : "bg-white/5 text-white/40",
                     )}
                   >
-                    {activity.score ? (
+                    {activity.itemType === "worksheet" ? (
                       <CheckCircle2 size={18} />
                     ) : (
                       <Calendar size={18} />
@@ -284,11 +393,6 @@ export default function DashboardProgress() {
                       <span className="text-[10px] font-bold uppercase text-white/40">
                         {activity.date}
                       </span>
-                      {activity.score && (
-                        <span className="text-[10px] font-bold text-emerald-500">
-                          {activity.score}%
-                        </span>
-                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -315,7 +419,7 @@ export default function DashboardProgress() {
             </div>
           </div>
           <div className="space-y-8">
-            {data.subjectProgress.map((subject, i) => (
+            {(data?.subjectProgress || []).map((subject, i) => (
               <motion.div
                 key={subject.name}
                 initial={{ opacity: 0, y: 20 }}
@@ -343,34 +447,6 @@ export default function DashboardProgress() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Achievement Banner */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.5 }}
-      >
-        <Card className="bg-gradient-to-r from-white to-white/90 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden">
-          <CardContent className="p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 text-center md:text-left">
-            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-black text-white flex items-center justify-center shrink-0">
-                <Award size={32} className="md:w-9 md:h-9" />
-              </div>
-              <div>
-                <h3 className="text-xl md:text-2xl font-black text-black mb-1">
-                  Keep it up!
-                </h3>
-                <p className="text-black/60 font-medium text-sm md:text-base">
-                  You're in the top 15% of learners this week
-                </p>
-              </div>
-            </div>
-            <button className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-4 bg-black text-white rounded-xl font-bold text-[10px] md:text-xs uppercase tracking-wider hover:scale-[1.02] transition-transform">
-              View Achievements <ArrowUpRight size={16} />
-            </button>
-          </CardContent>
-        </Card>
-      </motion.div>
     </div>
   );
 }

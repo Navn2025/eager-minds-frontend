@@ -14,6 +14,7 @@ const sections = [
   { id: "blog", label: "Blog" },
   { id: "testimonials", label: "Testimonials" },
   { id: "contact", label: "Contact" },
+  { id: "login", label: "Login" },
 ];
 
 export default function SectionNavbar() {
@@ -52,6 +53,11 @@ export default function SectionNavbar() {
 
   const scrollToSection = (id: string) => {
     setMobileOpen(false);
+
+    if (id === "login") {
+      navigate("/login");
+      return;
+    }
     
     if (!isHome) {
       navigate("/");
@@ -77,8 +83,8 @@ export default function SectionNavbar() {
         className={cn(
           "flex items-center justify-between px-6 py-3 rounded-full transition-all duration-500",
           scrolled 
-            ? "bg-[#000d1a]/60 backdrop-blur-2xl border border-blue-500/20 shadow-[0_8px_32px_0_rgba(0,13,26,0.8),0_0_15px_rgba(59,130,246,0.1)]" 
-            : "bg-blue-500/5 backdrop-blur-md border border-white/5"
+            ? "bg-[#0b0b0b]/80 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(11,11,11,0.8),0_0_15px_rgba(255,255,255,0.05)]" 
+            : "bg-[#0b0b0b]/20 backdrop-blur-md border border-white/5"
         )}
       >
         <Link 
@@ -103,8 +109,8 @@ export default function SectionNavbar() {
                 className={cn(
                   "text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-500 relative py-2",
                   activeSection === section.id 
-                    ? "text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" 
-                    : "text-white/30 hover:text-white/60 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
+                    ? "text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" 
+                    : "text-white/30 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-pink-400 hover:via-purple-400 hover:to-sky-400 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
                 )}
               >
                 {section.label}
@@ -162,7 +168,7 @@ export default function SectionNavbar() {
             initial={{ opacity: 0, scale: 0.95, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            className="absolute top-[120%] left-0 right-0 bg-black/90 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 flex flex-col gap-4 shadow-2xl"
+            className="absolute top-[120%] left-0 right-0 bg-[#0b0b0b]/95 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 flex flex-col gap-4 shadow-2xl"
           >
             <motion.div 
               variants={{

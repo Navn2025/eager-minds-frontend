@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import api from "../services/api";
 import PDFViewer from "../components/ui/PDFViewer";
 import { Card, CardContent } from "../components/ui/Card";
@@ -86,26 +87,29 @@ export default function Magazines() {
         </div>
       </motion.header>
 
-      <AnimatePresence>
-        {viewingPdf && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 md:p-10 backdrop-blur-3xl"
-          >
-            <PDFViewer
-              url={viewingPdf}
-              title={selectedTitle || "Secure Magazine Viewer"}
-              onClose={() => {
-                setViewingPdf(null);
-                setSelectedTitle(null);
-              }}
-              className="w-full max-w-7xl h-full shadow-[0_0_100px_rgba(255,255,255,0.05)] rounded-[3rem] border-white/10"
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {createPortal(
+        <AnimatePresence>
+          {viewingPdf && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[99999] bg-[#050505] flex items-center justify-center p-0 backdrop-blur-3xl"
+            >
+              <PDFViewer
+                url={viewingPdf}
+                title={selectedTitle || "Secure Magazine Viewer"}
+                onClose={() => {
+                  setViewingPdf(null);
+                  setSelectedTitle(null);
+                }}
+                className="w-full h-full border-none rounded-none"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
       <div className="space-y-32">
         {Object.keys(grouped)

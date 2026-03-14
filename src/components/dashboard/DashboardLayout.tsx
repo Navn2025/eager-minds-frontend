@@ -1,22 +1,25 @@
-import { useState } from "react";
-import { Outlet, Navigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import DashboardSidebar from "./DashboardSidebar";
 import { Menu, X } from "lucide-react";
+import HeroBackground from "../ui/HeroBackground";
 
 export default function DashboardLayout() {
   const { isLoggedIn } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const mainRef = useRef<HTMLElement | null>(null);
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    mainRef.current?.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [pathname]);
 
   if (!isLoggedIn) return <Navigate to="/login" replace />;
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background relative font-sans">
-      {/* Background Decorative Gradient */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_100%_0%,rgba(124,58,237,0.08)_0%,rgba(0,0,0,0)_50%)]" />
-        <div className="absolute bottom-0 left-0 w-full h-full bg-[radial-gradient(circle_at_0%_100%,rgba(37,99,235,0.05)_0%,rgba(0,0,0,0)_50%)]" />
-      </div>
+      <HeroBackground />
 
       {/* Mobile Menu Toggle */}
       <button
@@ -26,10 +29,16 @@ export default function DashboardLayout() {
         {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      <DashboardSidebar isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
-      
+      <DashboardSidebar
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+      />
+
       <div className="flex-grow flex flex-col h-full min-w-0 relative z-10 bg-transparent">
-        <main className="flex-grow overflow-y-auto p-4 md:p-8 lg:p-12 pb-32 lg:pb-12 scrollbar-thin">
+        <main
+          ref={mainRef}
+          className="flex-grow overflow-y-auto p-4 md:p-8 lg:p-12 pb-32 lg:pb-12 scrollbar-thin"
+        >
           <div className="max-w-[1400px] mx-auto w-full">
             <Outlet />
           </div>

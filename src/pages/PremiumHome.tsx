@@ -28,13 +28,14 @@ export default function PremiumHome() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [subjectsRes, wordRes, challengesRes, blogRes, testimonialsRes] = await Promise.all([
-          api.get("/prep/subjects"),
-          api.get("/prep/word-of-the-day"),
-          api.get("/competitions"),
-          api.get("/blog"),
-          api.get("/testimonials"),
-        ]);
+        const [subjectsRes, wordRes, challengesRes, blogRes, testimonialsRes] =
+          await Promise.all([
+            api.get("/prep/subjects"),
+            api.get("/prep/word-of-the-day"),
+            api.get("/competitions"),
+            api.get("/blog"),
+            api.get("/testimonials"),
+          ]);
 
         setData({
           subjects: subjectsRes.data,
@@ -55,18 +56,48 @@ export default function PremiumHome() {
 
   const heroConfig = {
     headline: "Where Creativity Meets Curiosity",
-    subheading: "Expert preparation for the next generation of innovators. Master the 11+ with futuristic learning strategies.",
+    subheading:
+      "Expert preparation for the next generation of innovators. Master the 11+ with futuristic learning strategies.",
     primaryCTA: { text: "Join the Club", link: "/login" },
     secondaryCTA: { text: "Learn More", link: "/about" },
   };
 
   const features = [
-    { icon: "Shield", title: "Secure Platform", description: "Our platform is built with the latest security standards to ensure your data is safe." },
-    { icon: "Zap", title: "Interactive Learning", description: "Engage with dynamic content that makes learning fun and effective." },
-    { icon: "Target", title: "Focused Prep", description: "Specific 11+ preparation modules designed for success." },
-    { icon: "Users", title: "Expert Community", description: "Learn from the best educators and join a thriving student community." },
-    { icon: "Layers", title: "Deep Insights", description: "Track your progress with detailed analytics and performance reports." },
-    { icon: "Cpu", title: "AI-Powered", description: "Personalized learning paths driven by advanced AI technology." },
+    {
+      icon: "Shield",
+      title: "Secure Platform",
+      description:
+        "Our platform is built with the latest security standards to ensure your data is safe.",
+    },
+    {
+      icon: "Zap",
+      title: "Interactive Learning",
+      description:
+        "Engage with dynamic content that makes learning fun and effective.",
+    },
+    {
+      icon: "Target",
+      title: "Focused Prep",
+      description: "Specific 11+ preparation modules designed for success.",
+    },
+    {
+      icon: "Users",
+      title: "Expert Community",
+      description:
+        "Learn from the best educators and join a thriving student community.",
+    },
+    {
+      icon: "Layers",
+      title: "Deep Insights",
+      description:
+        "Track your progress with detailed analytics and performance reports.",
+    },
+    {
+      icon: "Cpu",
+      title: "AI-Powered",
+      description:
+        "Personalized learning paths driven by advanced AI technology.",
+    },
   ];
 
   if (loading) {
@@ -80,7 +111,7 @@ export default function PremiumHome() {
   return (
     <main className="flex flex-col bg-background">
       <Hero {...heroConfig} />
-      
+
       <section className="page-container">
         <h2 className="section-title">Elevate Your Potential</h2>
         <FeaturesGrid features={features} />
@@ -88,17 +119,18 @@ export default function PremiumHome() {
 
       <section className="page-container">
         <h2 className="section-title">Core Disciplines</h2>
-        <SubjectsGrid 
-          subjects={data.subjects.map(s => ({
+        <SubjectsGrid
+          subjects={data.subjects.map((s) => ({
             icon: "Book",
             title: s.name,
-            shortDescription: `${s._count?.topics || 0} Topics • ${s._count?.worksheets || 0} Worksheets`
-          }))} 
+            shortDescription: `${s._count?.topics || 0} Topics • ${s._count?.worksheets || 0} Worksheets`,
+            slug: s.slug || s.name.toLowerCase().replace(/\s+/g, "-"),
+          }))}
         />
       </section>
 
       {data.wordOfDay && (
-        <WordOfDay 
+        <WordOfDay
           word={data.wordOfDay.word}
           pronunciation={data.wordOfDay.pronunciation}
           partOfSpeech="Vocabulary"
@@ -109,35 +141,39 @@ export default function PremiumHome() {
 
       <section className="page-container">
         <h2 className="section-title">Upcoming Challenges</h2>
-        <ChallengesList 
-          challenges={data.challenges.slice(0, 3).map(c => ({
-            image: c.image || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop",
+        <ChallengesList
+          challenges={data.challenges.slice(0, 3).map((c) => ({
+            image:
+              c.image ||
+              "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop",
             title: c.title,
             description: c.description,
-            registrationLink: c.registrationLink || "/competitions"
-          }))} 
+            registrationLink: c.registrationLink || "/competitions",
+          }))}
         />
       </section>
 
       <section className="page-container">
         <h2 className="section-title">Educational Insights</h2>
-        <BlogGrid 
-          posts={data.blogPosts.slice(0, 3).map(p => ({
-            image: p.image || "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=2070&auto=format&fit=crop",
+        <BlogGrid
+          posts={data.blogPosts.slice(0, 3).map((p) => ({
+            image:
+              p.image ||
+              "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=2070&auto=format&fit=crop",
             category: "Insight",
             title: p.title,
-            slug: p.slug
-          }))} 
+            slug: p.slug,
+          }))}
         />
       </section>
 
-      <Testimonials 
-        testimonials={data.testimonials.map(t => ({
+      <Testimonials
+        testimonials={data.testimonials.map((t) => ({
           rating: t.rating || 5,
           quote: t.content,
           author: t.parentName,
-          role: "Parent"
-        }))} 
+          role: "Parent",
+        }))}
       />
     </main>
   );

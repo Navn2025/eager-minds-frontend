@@ -19,23 +19,27 @@ export default function FullscreenNavbar() {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-[100] px-6 py-5 flex justify-center pointer-events-none">
-        <div className={cn(
-          "w-full max-w-7xl flex items-center justify-between px-5 py-2.5 rounded-2xl transition-all duration-500 pointer-events-auto",
-          scrolled
-            ? "bg-[#07050F]/75 backdrop-blur-2xl border border-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.6),0_0_0_1px_rgba(168,85,247,0.12)]"
-            : "bg-transparent"
-        )}>
+        <div
+          className={cn(
+            "w-full max-w-7xl flex items-center justify-between px-5 py-2.5 rounded-2xl transition-all duration-500 pointer-events-auto",
+            scrolled
+              ? "bg-[#07050F]/75 backdrop-blur-2xl border border-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.6),0_0_0_1px_rgba(168,85,247,0.12)]"
+              : "bg-transparent",
+          )}
+        >
           {/* Logo */}
           <Link
             to="/"
             className="flex items-center gap-3 group rounded-xl pr-2"
           >
-            <div className="flex items-center justify-center rounded-xl px-3 py-2
+            <div
+              className="flex items-center justify-center rounded-xl px-3 py-2
               bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-sky-500/10
               border border-purple-400/20
               shadow-[0_4px_20px_rgba(168,85,247,0.18)]
               group-hover:border-purple-400/40 group-hover:shadow-[0_4px_28px_rgba(236,72,153,0.22)]
-              transition-all duration-300">
+              transition-all duration-300"
+            >
               <img
                 src="/whitethemelogo.svg"
                 alt="Eager Minds Club logo"
@@ -53,10 +57,11 @@ export default function FullscreenNavbar() {
           <div className="hidden lg:flex items-center gap-7">
             {[
               { label: "Home", path: "/" },
-              { label: "11+ Prep", path: "/11-plus-prep" },
               { label: "Competitions", path: "/competitions" },
               { label: "Arts & Craft", path: "/arts-craft" },
-              { label: "Blog", path: "/blog" }
+              { label: "11+ Prep", path: "/11-plus-prep" },
+              { label: "Word of the Day", path: "/word-of-the-day" },
+              { label: "Blog", path: "/blog" },
             ].map((link) => (
               <Link
                 key={link.label}
@@ -65,9 +70,11 @@ export default function FullscreenNavbar() {
               >
                 {link.label}
                 {/* gradient underline on hover */}
-                <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] rounded-full
+                <span
+                  className="absolute -bottom-1 left-0 w-0 h-[1.5px] rounded-full
                   bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400
-                  transition-all duration-300 group-hover:w-full" />
+                  transition-all duration-300 group-hover:w-full"
+                />
               </Link>
             ))}
           </div>
@@ -113,8 +120,13 @@ export default function FullscreenNavbar() {
                 hover:border-purple-400/35
                 transition-all duration-300 group"
             >
-              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/80">Menu</span>
-              <Menu size={15} className="text-purple-400 group-hover:text-pink-400 group-hover:rotate-90 transition-all duration-300" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/80">
+                Menu
+              </span>
+              <Menu
+                size={15}
+                className="text-purple-400 group-hover:text-pink-400 group-hover:rotate-90 transition-all duration-300"
+              />
             </button>
           </div>
         </div>

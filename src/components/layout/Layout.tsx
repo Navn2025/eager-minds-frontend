@@ -38,8 +38,8 @@ export default function Layout() {
         links: [
           { to: "/faqs", label: "Assistance" },
           { to: "/enquire", label: "Contact Us" },
-          { to: "/safety-gdpr", label: "Privacy Policy" },
-          { to: "/safety-gdpr", label: "Terms" },
+          { to: "/privacy-policy", label: "Privacy Policy" },
+          { to: "/terms", label: "Terms" },
         ]
       }
     ]

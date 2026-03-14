@@ -12,15 +12,20 @@ export default function AdminSubjects() {
     topicId: string;
     file: File;
   } | null>(null);
+  const [answerFile, setAnswerFile] = useState<{
+    topicId: string;
+    file: File;
+  } | null>(null);
   const [worksheetTitle, setWorksheetTitle] = useState<Record<string, string>>(
     {},
   );
   const [loading, setLoading] = useState(true);
+  const [uploadingTopicId, setUploadingTopicId] = useState<string | null>(null);
 
   const fetchData = useCallback(() => {
     setLoading(true);
     api
-      .get("/prep/subjects")
+      .get("/prep/subjects?include=full")
       .then((res) => {
         setSubjects(res.data);
         setLoading(false);
@@ -45,16 +50,30 @@ export default function AdminSubjects() {
     fetchData();
   };
 
-  const uploadWorksheet = async (topicId: string) => {
+  const uploadWorksheet = async (topicId: string, subjectId: string) => {
     if (!worksheetFile || worksheetFile.topicId !== topicId) return;
-    const fd = new FormData();
-    fd.append("title", worksheetTitle[topicId] || worksheetFile.file.name);
-    fd.append("topicId", topicId);
-    fd.append("file", worksheetFile.file);
-    await api.post("/prep/worksheets", fd);
-    setWorksheetFile(null);
-    setWorksheetTitle((p) => ({ ...p, [topicId]: "" }));
-    fetchData();
+    setUploadingTopicId(topicId);
+    try {
+      const fd = new FormData();
+      fd.append("title", worksheetTitle[topicId] || worksheetFile.file.name);
+      fd.append("subjectId", subjectId);
+      fd.append("topicId", topicId);
+      fd.append("pdf", worksheetFile.file);
+      if (answerFile && answerFile.topicId === topicId) {
+        fd.append("answer", answerFile.file);
+      }
+      await api.post("/prep/worksheets", fd);
+      alert("PDF(s) uploaded successfully!");
+      setWorksheetFile(null);
+      setAnswerFile(null);
+      setWorksheetTitle((p) => ({ ...p, [topicId]: "" }));
+      fetchData();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to upload PDF");
+    } finally {
+      setUploadingTopicId(null);
+    }
   };
 
   const deleteWorksheet = async (id: string, title: string) => {
@@ -200,13 +219,13 @@ export default function AdminSubjects() {
                                 placeholder="Worksheet Signature"
                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] text-white font-bold uppercase tracking-widest outline-none focus:border-accent/40"
                               />
-                              <div className="flex items-center gap-3">
-                                <label className="flex-1 cursor-pointer">
+                              <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-3 items-center">
+                                <label className="cursor-pointer">
                                   <div className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/20 hover:text-white transition-colors flex items-center justify-center gap-2">
                                     <FileUp size={14} />{" "}
                                     {worksheetFile?.topicId === tId
-                                      ? "File Ready"
-                                      : "Select PDF"}
+                                      ? "Worksheet Ready"
+                                      : "Worksheet PDF"}
                                   </div>
                                   <input
                                     type="file"
@@ -221,11 +240,38 @@ export default function AdminSubjects() {
                                     }
                                   />
                                 </label>
+
+                                <label className="cursor-pointer">
+                                  <div className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/20 hover:text-white transition-colors flex items-center justify-center gap-2">
+                                    <FileUp size={14} />{" "}
+                                    {answerFile?.topicId === tId
+                                      ? "Answer Ready"
+                                      : "Answer PDF"}
+                                  </div>
+                                  <input
+                                    type="file"
+                                    accept=".pdf"
+                                    className="hidden"
+                                    onChange={(e) =>
+                                      e.target.files?.[0] &&
+                                      setAnswerFile({
+                                        topicId: tId,
+                                        file: e.target.files[0],
+                                      })
+                                    }
+                                  />
+                                </label>
+
                                 <button
-                                  onClick={() => uploadWorksheet(tId)}
-                                  className="w-12 h-12 bg-accent/20 border border-accent/20 rounded-xl flex items-center justify-center text-accent hover:bg-accent hover:text-white transition-all shadow-lg"
+                                  onClick={() => uploadWorksheet(tId, sId)}
+                                  disabled={uploadingTopicId === tId}
+                                  className={`w-12 h-12 bg-accent/20 border border-accent/20 rounded-xl flex items-center justify-center text-accent hover:bg-accent hover:text-white transition-all shadow-lg ${uploadingTopicId === tId ? "opacity-50 cursor-wait" : ""}`}
                                 >
-                                  <Plus size={20} />
+                                  {uploadingTopicId === tId ? (
+                                    <div className="w-5 h-5 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+                                  ) : (
+                                    <Plus size={20} />
+                                  )}
                                 </button>
                               </div>
                             </div>

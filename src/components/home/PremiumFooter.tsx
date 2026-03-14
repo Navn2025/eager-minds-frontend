@@ -1,4 +1,5 @@
 import { Twitter, Instagram, Linkedin, Facebook } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const footerLinks = [
   {
@@ -61,8 +62,8 @@ export default function PremiumFooter() {
             © 2026 Eager Minds Club. All rights reserved.
           </div>
           <div className="flex gap-8">
-            <a href="#" className="text-text-secondary hover:text-white text-xs transition-colors">Privacy Policy</a>
-            <a href="#" className="text-text-secondary hover:text-white text-xs transition-colors">Terms of Service</a>
+            <Link to="/privacy-policy" className="text-text-secondary hover:text-white text-xs transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="text-text-secondary hover:text-white text-xs transition-colors">Terms of Service</Link>
             <a href="#" className="text-text-secondary hover:text-white text-xs transition-colors">Cookie Settings</a>
           </div>
         </div>

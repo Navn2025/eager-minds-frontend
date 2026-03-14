@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   BookOpen,
@@ -13,6 +15,7 @@ import {
 import { Card, CardContent } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import api from "../../services/api";
+import PDFViewer from "../../components/ui/PDFViewer";
 import { cn } from "../../lib/utils";
 
 interface Magazine {
@@ -23,15 +26,19 @@ interface Magazine {
   publishedAt: string;
   category: string;
   pageCount: number;
+  pdfUrl?: string;
   isNew?: boolean;
   isSaved?: boolean;
 }
 
 export default function DashboardMagazines() {
+  const navigate = useNavigate();
   const [magazines, setMagazines] = useState<Magazine[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string>("all");
+  const [viewingPdf, setViewingPdf] = useState<string | null>(null);
+  const [selectedTitle, setSelectedTitle] = useState<string>("");
 
   const getMockData = (): Magazine[] => [
     {
@@ -42,6 +49,7 @@ export default function DashboardMagazines() {
       publishedAt: "2026-03-01",
       category: "Educational",
       pageCount: 48,
+      pdfUrl: "",
       isNew: true,
     },
     {
@@ -52,6 +60,7 @@ export default function DashboardMagazines() {
       publishedAt: "2026-03-01",
       category: "Science",
       pageCount: 36,
+      pdfUrl: "",
       isNew: true,
     },
     {
@@ -62,6 +71,7 @@ export default function DashboardMagazines() {
       publishedAt: "2026-02-15",
       category: "Mathematics",
       pageCount: 32,
+      pdfUrl: "",
       isSaved: true,
     },
     {
@@ -72,6 +82,7 @@ export default function DashboardMagazines() {
       publishedAt: "2026-01-20",
       category: "English",
       pageCount: 44,
+      pdfUrl: "",
     },
     {
       id: "5",
@@ -81,6 +92,7 @@ export default function DashboardMagazines() {
       publishedAt: "2026-02-01",
       category: "History",
       pageCount: 52,
+      pdfUrl: "",
       isSaved: true,
     },
     {
@@ -91,6 +103,7 @@ export default function DashboardMagazines() {
       publishedAt: "2026-02-28",
       category: "Puzzles",
       pageCount: 28,
+      pdfUrl: "",
     },
   ];
 
@@ -98,21 +111,38 @@ export default function DashboardMagazines() {
     api
       .get("/magazines")
       .then((res) => {
-        const mapped = (res.data || []).map(
+        const raw = Array.isArray(res.data)
+          ? res.data
+          : res.data?.magazines || [];
+        const mapped = raw.map(
           (m: {
             id: string;
             title: string;
+            pdfUrl?: string;
             coverUrl?: string;
+            month?: number;
+            year?: number;
             publishedAt?: string;
             edition?: string;
           }) => ({
             id: m.id,
             title: m.title,
-            edition: m.edition || "Latest Edition",
+            edition:
+              m.edition ||
+              (m.month && m.year
+                ? `${new Date(m.year, m.month - 1, 1).toLocaleString("en-GB", {
+                    month: "long",
+                  })} ${m.year}`
+                : "Latest Edition"),
             coverImage: m.coverUrl || "/placeholder-magazine.jpg",
-            publishedAt: m.publishedAt || new Date().toISOString(),
+            publishedAt:
+              m.publishedAt ||
+              (m.month && m.year
+                ? new Date(m.year, m.month - 1, 1).toISOString()
+                : new Date().toISOString()),
             category: "Educational",
             pageCount: 42,
+            pdfUrl: m.pdfUrl || "",
             isNew: true,
           }),
         );
@@ -124,6 +154,16 @@ export default function DashboardMagazines() {
         setLoading(false);
       });
   }, []);
+
+  const openMagazine = (magazine: Magazine) => {
+    if (magazine.pdfUrl) {
+      setViewingPdf(magazine.pdfUrl);
+      setSelectedTitle(magazine.title);
+      return;
+    }
+
+    navigate("/magazines");
+  };
 
   const categories = ["all", ...new Set(magazines.map((m) => m.category))];
 
@@ -151,6 +191,19 @@ export default function DashboardMagazines() {
 
   return (
     <div className="space-y-12 pb-32 pt-10">
+      {viewingPdf &&
+        selectedTitle &&
+        createPortal(
+          <PDFViewer
+            url={viewingPdf}
+            title={selectedTitle}
+            onClose={() => {
+              setViewingPdf(null);
+              setSelectedTitle("");
+            }}
+          />,
+          document.body,
+        )}
       <motion.header
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -207,10 +260,26 @@ export default function DashboardMagazines() {
                     <span>{magazines[0].pageCount} pages</span>
                   </div>
                   <div className="flex gap-4">
-                    <Button className="h-14 px-8 rounded-xl bg-white text-black font-bold uppercase tracking-wider hover:scale-[1.02] transition-transform">
+                    <Button
+                      onClick={() => openMagazine(magazines[0])}
+                      className="h-14 px-8 rounded-xl bg-white text-black font-bold uppercase tracking-wider hover:scale-[1.02] transition-transform"
+                    >
                       <Eye size={18} className="mr-2" /> Read Now
                     </Button>
-                    <Button className="h-14 px-6 rounded-xl bg-white/5 text-white border border-white/10 font-bold uppercase tracking-wider hover:bg-white/10 transition-colors">
+                    <Button
+                      onClick={() => {
+                        if (magazines[0].pdfUrl) {
+                          window.open(
+                            magazines[0].pdfUrl,
+                            "_blank",
+                            "noopener,noreferrer",
+                          );
+                          return;
+                        }
+                        navigate("/magazines");
+                      }}
+                      className="h-14 px-6 rounded-xl bg-white/5 text-white border border-white/10 font-bold uppercase tracking-wider hover:bg-white/10 transition-colors"
+                    >
                       <Download size={18} />
                     </Button>
                   </div>
@@ -293,7 +362,10 @@ export default function DashboardMagazines() {
                   <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">
                     {magazine.pageCount} pages
                   </span>
-                  <Button className="h-10 px-4 rounded-xl bg-white/5 text-white text-xs font-bold uppercase tracking-wider hover:bg-white/10 transition-colors">
+                  <Button
+                    onClick={() => openMagazine(magazine)}
+                    className="h-10 px-4 rounded-xl bg-white/5 text-white text-xs font-bold uppercase tracking-wider hover:bg-white/10 transition-colors"
+                  >
                     View <ChevronRight size={14} className="ml-1" />
                   </Button>
                 </div>

@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ShieldCheck,
@@ -16,6 +18,7 @@ import {
 import { Card, CardContent } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import api from "../../services/api";
+import PDFViewer from "../../components/ui/PDFViewer";
 import { cn } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
 
@@ -32,9 +35,11 @@ interface Paper {
   completed?: boolean;
   score?: number;
   downloadCount?: number;
+  pdfUrl?: string;
 }
 
 export default function DashboardPapers() {
+  const navigate = useNavigate();
   const { isPremium } = useAuth();
   const [papers, setPapers] = useState<Paper[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,6 +48,8 @@ export default function DashboardPapers() {
   );
   const [search, setSearch] = useState("");
   const [subjectFilter, setSubjectFilter] = useState<string>("all");
+  const [viewingPdf, setViewingPdf] = useState<string | null>(null);
+  const [selectedTitle, setSelectedTitle] = useState<string>("");
 
   const getMockData = (): Paper[] => [
     {
@@ -58,6 +65,7 @@ export default function DashboardPapers() {
       completed: true,
       score: 92,
       downloadCount: 1250,
+      pdfUrl: "",
     },
     {
       id: "2",
@@ -72,6 +80,7 @@ export default function DashboardPapers() {
       completed: true,
       score: 88,
       downloadCount: 980,
+      pdfUrl: "",
     },
     {
       id: "3",
@@ -84,6 +93,7 @@ export default function DashboardPapers() {
       year: "2026",
       isPremium: true,
       downloadCount: 720,
+      pdfUrl: "",
     },
     {
       id: "4",
@@ -96,6 +106,7 @@ export default function DashboardPapers() {
       year: "2025",
       isPremium: true,
       downloadCount: 560,
+      pdfUrl: "",
     },
     {
       id: "5",
@@ -108,6 +119,7 @@ export default function DashboardPapers() {
       year: "2026",
       isPremium: true,
       downloadCount: 1580,
+      pdfUrl: "",
     },
     {
       id: "6",
@@ -120,6 +132,7 @@ export default function DashboardPapers() {
       year: "2026",
       isPremium: false,
       downloadCount: 2100,
+      pdfUrl: "",
     },
     {
       id: "7",
@@ -134,6 +147,7 @@ export default function DashboardPapers() {
       completed: true,
       score: 85,
       downloadCount: 890,
+      pdfUrl: "",
     },
     {
       id: "8",
@@ -146,6 +160,7 @@ export default function DashboardPapers() {
       year: "2026",
       isPremium: true,
       downloadCount: 420,
+      pdfUrl: "",
     },
   ];
 
@@ -153,19 +168,38 @@ export default function DashboardPapers() {
     api
       .get("/papers")
       .then((res) => {
-        const mapped = (res.data || []).map(
+        const raw = Array.isArray(res.data) ? res.data : res.data?.papers || [];
+        const mapped = raw.map(
           (p: {
             id: string;
             title: string;
-            subject?: string;
+            subject?: string | { name?: string };
             type?: string;
             duration?: number;
+            difficulty?: string;
+            questionCount?: number;
+            year?: string | number;
+            score?: number;
+            downloadCount?: number;
+            completed?: boolean;
+            pdfUrl?: string;
           }) => ({
-            ...p,
-            difficulty: "Medium",
-            questionCount: 50,
+            id: p.id,
+            title: p.title,
+            subject:
+              typeof p.subject === "string"
+                ? p.subject
+                : p.subject?.name || "Mixed",
+            type: p.type || "Practice Paper",
+            duration: p.duration || 60,
+            difficulty: p.difficulty || "Medium",
+            questionCount: p.questionCount || 50,
             isPremium: true,
-            year: "2026",
+            year: p.year ? String(p.year) : "2026",
+            score: p.score,
+            completed: Boolean(p.completed),
+            downloadCount: p.downloadCount,
+            pdfUrl: p.pdfUrl || "",
           }),
         );
         setPapers(mapped.length ? mapped : getMockData());
@@ -176,6 +210,21 @@ export default function DashboardPapers() {
         setLoading(false);
       });
   }, []);
+
+  const openPaper = (paper: Paper) => {
+    if (paper.isPremium && !isPremium) {
+      navigate("/papers-on-demand");
+      return;
+    }
+
+    if (paper.pdfUrl) {
+      setViewingPdf(paper.pdfUrl);
+      setSelectedTitle(paper.title);
+      return;
+    }
+
+    navigate("/papers-on-demand");
+  };
 
   const subjects = ["all", ...new Set(papers.map((p) => p.subject))];
 
@@ -221,6 +270,19 @@ export default function DashboardPapers() {
 
   return (
     <div className="space-y-12 pb-32 pt-10">
+      {viewingPdf &&
+        selectedTitle &&
+        createPortal(
+          <PDFViewer
+            url={viewingPdf}
+            title={selectedTitle}
+            onClose={() => {
+              setViewingPdf(null);
+              setSelectedTitle("");
+            }}
+          />,
+          document.body,
+        )}
       <motion.header
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -454,10 +516,24 @@ export default function DashboardPapers() {
                       </div>
                     )}
                     <div className="flex gap-2">
-                      <Button className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-white/5 text-white hover:bg-white/10 transition-colors">
+                      <Button
+                        onClick={() => {
+                          if (paper.pdfUrl) {
+                            window.open(
+                              paper.pdfUrl,
+                              "_blank",
+                              "noopener,noreferrer",
+                            );
+                            return;
+                          }
+                          navigate("/papers-on-demand");
+                        }}
+                        className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-white/5 text-white hover:bg-white/10 transition-colors"
+                      >
                         <Download size={16} className="md:w-[18px]" />
                       </Button>
                       <Button
+                        onClick={() => openPaper(paper)}
                         className={cn(
                           "h-10 md:h-12 px-5 md:px-6 rounded-xl font-bold text-xs md:text-sm uppercase tracking-wider transition-all min-w-[90px] md:min-w-[100px]",
                           paper.isPremium && !isPremium
