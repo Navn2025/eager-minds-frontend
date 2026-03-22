@@ -16,6 +16,11 @@ const ArtsCraft = lazy(() => import("./pages/ArtsCraft"));
 const Activities = lazy(() => import("./pages/Activities"));
 const WhatsOn = lazy(() => import("./pages/WhatsOn"));
 const AboutUs = lazy(() => import("./pages/AboutUs"));
+const OurClubs = lazy(() => import("./pages/OurClubs"));
+const ClubPage = lazy(() => import("./pages/ClubPage"));
+const Gallery = lazy(() => import("./pages/Gallery"));
+const Workshops = lazy(() => import("./pages/Workshops"));
+const ContactUs = lazy(() => import("./pages/ContactUs"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Magazines = lazy(() => import("./pages/Magazines"));
@@ -90,18 +95,49 @@ function App() {
       <ScrollToTop />
       <Routes>
         <Route element={<Layout />}>
+          {/* ── Main public routes (tab order) ── */}
           <Route path="/" element={<PremiumHome />} />
+          <Route path="/about" element={<AboutUs />} />
+
+          {/* Our Clubs */}
+          <Route path="/clubs" element={<OurClubs />} />
+          <Route path="/clubs/arts-craft" element={<ClubPage />} />
+          <Route path="/clubs/science" element={<ClubPage />} />
+          <Route path="/clubs/coding" element={<ClubPage />} />
+          <Route path="/clubs/reading" element={<ClubPage />} />
+          <Route path="/clubs/music" element={<ClubPage />} />
+          <Route path="/clubs/global" element={<ClubPage />} />
+
+          {/* Workshops */}
+          <Route path="/workshops" element={<Workshops />} />
+
+          {/* Gallery */}
+          <Route path="/gallery" element={<Gallery />} />
+
+          {/* Word of the Day */}
+          <Route path="/word-of-the-day" element={<WordOfTheDayPage />} />
+
+          {/* 11+ Prep */}
           <Route path="/11-plus-prep" element={<ElevenPlusPrep />} />
+
+          {/* Competitions */}
           <Route path="/competitions" element={<Competitions />} />
+
+          {/* Magazines */}
+          <Route path="/magazines" element={<Magazines />} />
+
+          {/* Blog */}
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:id" element={<BlogPost />} />
+
+          {/* Contact */}
+          <Route path="/contact" element={<ContactUs />} />
+
+          {/* Legacy / other pages */}
           <Route path="/arts-craft" element={<ArtsCraft />} />
           <Route path="/activities" element={<Activities />} />
           <Route path="/whats-on" element={<WhatsOn />} />
-          <Route path="/about" element={<AboutUs />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:id" element={<BlogPost />} />
-          <Route path="/magazines" element={<Magazines />} />
           <Route path="/papers-on-demand" element={<PapersOnDemand />} />
-          <Route path="/word-of-the-day" element={<WordOfTheDayPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/enquire" element={<EnquireNow />} />
           <Route path="/faqs" element={<FAQs />} />

@@ -30,22 +30,22 @@ export default function FullscreenNavbar() {
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-3 group rounded-xl pr-2"
+            className="flex items-center gap-3 group"
           >
             <div
-              className="flex items-center justify-center rounded-xl px-3 py-2
-              bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-sky-500/10
-              border border-purple-400/20
-              shadow-[0_4px_20px_rgba(168,85,247,0.18)]
-              group-hover:border-purple-400/40 group-hover:shadow-[0_4px_28px_rgba(236,72,153,0.22)]
-              transition-all duration-300"
+              className="flex items-center justify-center rounded-full w-14 h-14
+              bg-gradient-to-br from-pink-500/20 via-purple-500/20 to-sky-500/20
+              border-2 border-purple-400/30
+              shadow-[0_4px_20px_rgba(168,85,247,0.25),0_0_0_4px_rgba(168,85,247,0.05)]
+              group-hover:border-pink-400/50 group-hover:shadow-[0_4px_28px_rgba(236,72,153,0.32),0_0_0_6px_rgba(236,72,153,0.07)]
+              transition-all duration-300 overflow-hidden"
             >
               <img
                 src="/whitethemelogo.svg"
                 alt="Eager Minds Club logo"
-                className="h-10 sm:h-11 w-auto max-w-[190px] object-contain
-                  drop-shadow-[0_0_10px_rgba(168,85,247,0.45)]
-                  group-hover:scale-[1.04] transition-transform duration-300"
+                className="h-9 w-9 object-contain
+                  drop-shadow-[0_0_10px_rgba(168,85,247,0.55)]
+                  group-hover:scale-[1.08] transition-transform duration-300"
               />
             </div>
             <span className="hidden sm:block text-[12px] md:text-[13px] font-extrabold uppercase tracking-[0.18em] text-white/90 leading-none pt-[1px]">
@@ -54,13 +54,14 @@ export default function FullscreenNavbar() {
           </Link>
 
           {/* Center Links */}
-          <div className="hidden lg:flex items-center gap-7">
+          <div className="hidden lg:flex items-center gap-6">
             {[
               { label: "Home", path: "/" },
-              { label: "Competitions", path: "/competitions" },
-              { label: "Arts & Craft", path: "/arts-craft" },
+              { label: "About Us", path: "/about" },
+              { label: "Our Clubs", path: "/clubs" },
+              { label: "Workshops", path: "/workshops" },
+              { label: "Gallery", path: "/gallery" },
               { label: "11+ Prep", path: "/11-plus-prep" },
-              { label: "Word of the Day", path: "/word-of-the-day" },
               { label: "Blog", path: "/blog" },
             ].map((link) => (
               <Link

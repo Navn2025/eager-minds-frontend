@@ -57,7 +57,7 @@ export default function PremiumHome() {
   const heroConfig = {
     headline: "Where Creativity Meets Curiosity",
     subheading:
-      "Expert preparation for the next generation of innovators. Master the 11+ with futuristic learning strategies.",
+      "A creative learning club designed to inspire curiosity, creativity, and confidence in children through arts, science projects, Coding and skill-based activities.",
     primaryCTA: { text: "Join the Club", link: "/login" },
     secondaryCTA: { text: "Learn More", link: "/about" },
   };
