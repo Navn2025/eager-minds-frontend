@@ -3,18 +3,65 @@ import { Link } from "react-router-dom";
 import { cn } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
 import SplitFullscreenMenu from "./SplitFullscreenMenu";
-import { Menu, LayoutDashboard, Shield } from "lucide-react";
+import { Menu, LayoutDashboard, Shield, ChevronDown } from "lucide-react";
 import logo from "../../assets/logo.png";
+import api from "../../services/api";
+
+interface PrepSubject {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+interface CenterLink {
+  label: string;
+  path: string;
+  id?: "prep";
+}
 
 export default function FullscreenNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [prepSubjects, setPrepSubjects] = useState<PrepSubject[]>([]);
+  const [isPrepDropdownOpen, setIsPrepDropdownOpen] = useState(false);
   const { isLoggedIn, isAdmin } = useAuth();
+
+  const centerLinks: CenterLink[] = [
+    { label: "Home", path: "/" },
+    { label: "About", path: "/about" },
+    { label: "Arts & Craft", path: "/arts-craft" },
+    { label: "Workshops", path: "/workshops" },
+    { label: "11+ Prep", path: "/11-plus-prep", id: "prep" },
+    { label: "Word of the Day", path: "/word-of-the-day" },
+    { label: "Gallery", path: "/gallery" },
+    { label: "Blog", path: "/blog" },
+  ];
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    api
+      .get("/prep/subjects")
+      .then((res) => {
+        if (!isMounted) return;
+        const subjects = Array.isArray(res.data)
+          ? res.data
+          : res.data?.subjects || [];
+        setPrepSubjects(subjects);
+      })
+      .catch(() => {
+        if (isMounted) setPrepSubjects([]);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
@@ -55,31 +102,80 @@ export default function FullscreenNavbar() {
           </Link>
 
           {/* Center Links */}
-          <div className="hidden xl:flex items-center justify-center gap-4 2xl:gap-5 min-w-0 overflow-hidden">
-            {[
-              { label: "Home", path: "/" },
-              { label: "About", path: "/about" },
-              { label: "Arts & Craft", path: "/arts-craft" },
-              { label: "Workshops", path: "/workshops" },
-              { label: "11+", path: "/11-plus-prep" },
-              { label: "Word of the Day", path: "/word-of-the-day" },
-              { label: "Gallery", path: "/gallery" },
-              { label: "Blog", path: "/blog" },
-            ].map((link) => (
-              <Link
-                key={link.label}
-                to={link.path}
-                className="text-[9px] 2xl:text-[10px] font-bold uppercase tracking-[0.14em] text-white/50 hover:text-white/90 transition-colors duration-200 relative group whitespace-nowrap"
-              >
-                {link.label}
-                {/* gradient underline on hover */}
-                <span
-                  className="absolute -bottom-1 left-0 w-0 h-[1.5px] rounded-full
-                  bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400
-                  transition-all duration-300 group-hover:w-full"
-                />
-              </Link>
-            ))}
+          <div className="hidden xl:flex items-center justify-center gap-4 2xl:gap-5 min-w-0 overflow-visible">
+            {centerLinks.map((link) =>
+              link.id === "prep" ? (
+                <div
+                  key={link.label}
+                  className="relative"
+                  onMouseEnter={() => setIsPrepDropdownOpen(true)}
+                  onMouseLeave={() => setIsPrepDropdownOpen(false)}
+                >
+                  <Link
+                    to={link.path}
+                    className="text-[9px] 2xl:text-[10px] font-bold uppercase tracking-[0.14em] text-white/50 hover:text-white/90 transition-colors duration-200 relative group whitespace-nowrap inline-flex items-center gap-1.5"
+                  >
+                    {link.label}
+                    <ChevronDown
+                      size={12}
+                      className={cn(
+                        "transition-transform duration-200",
+                        isPrepDropdownOpen ? "rotate-180" : "rotate-0",
+                      )}
+                    />
+                    <span
+                      className="absolute -bottom-1 left-0 w-0 h-[1.5px] rounded-full
+                      bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400
+                      transition-all duration-300 group-hover:w-full"
+                    />
+                  </Link>
+
+                  <div
+                    className={cn(
+                      "absolute left-1/2 top-full z-[120] mt-3 w-56 -translate-x-1/2 rounded-2xl border border-white/10 bg-[#090611]/95 backdrop-blur-xl p-2 shadow-[0_20px_60px_rgba(0,0,0,0.45)] transition-all duration-200",
+                      isPrepDropdownOpen
+                        ? "opacity-100 translate-y-0 pointer-events-auto"
+                        : "opacity-0 -translate-y-1 pointer-events-none",
+                    )}
+                  >
+                    {prepSubjects.length > 0 ? (
+                      prepSubjects.map((subject) => (
+                        <Link
+                          key={subject.id}
+                          to={`/11-plus-prep?subject=${subject.slug}`}
+                          onClick={() => setIsPrepDropdownOpen(false)}
+                          className="block rounded-xl px-3 py-2 text-[10px] 2xl:text-[11px] font-bold uppercase tracking-[0.15em] text-white/65 hover:text-white hover:bg-white/[0.05] transition-colors"
+                        >
+                          {subject.name}
+                        </Link>
+                      ))
+                    ) : (
+                      <Link
+                        to="/11-plus-prep"
+                        onClick={() => setIsPrepDropdownOpen(false)}
+                        className="block rounded-xl px-3 py-2 text-[10px] 2xl:text-[11px] font-bold uppercase tracking-[0.15em] text-white/65 hover:text-white hover:bg-white/[0.05] transition-colors"
+                      >
+                        Open 11+ Prep
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <Link
+                  key={link.label}
+                  to={link.path}
+                  className="text-[9px] 2xl:text-[10px] font-bold uppercase tracking-[0.14em] text-white/50 hover:text-white/90 transition-colors duration-200 relative group whitespace-nowrap"
+                >
+                  {link.label}
+                  {/* gradient underline on hover */}
+                  <span
+                    className="absolute -bottom-1 left-0 w-0 h-[1.5px] rounded-full
+                    bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400
+                    transition-all duration-300 group-hover:w-full"
+                  />
+                </Link>
+              ),
+            )}
           </div>
 
           {/* Right Actions */}

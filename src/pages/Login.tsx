@@ -163,7 +163,7 @@ export default function Login() {
               {!isLogin && (
                 <div className="space-y-3">
                   <label className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 ml-1">
-                    Full Identity
+                    Full Name
                   </label>
                   <div className="relative group/input">
                     <User
@@ -174,7 +174,7 @@ export default function Login() {
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="e.g. Leonardo da Vinci"
+                      placeholder="Enter your full name"
                       required
                       autoComplete="name"
                       className="w-full pl-14 pr-6 py-3.5 sm:py-4 bg-white/[0.02] border border-white/5 rounded-[1.5rem] text-white placeholder:text-white/10 focus:bg-white focus:text-black transition-all text-sm font-bold outline-none"
@@ -185,7 +185,7 @@ export default function Login() {
 
               <div className="space-y-3">
                 <label className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 ml-1">
-                  Account Proxy
+                  Email
                 </label>
                 <div className="relative group/input">
                   <Mail
@@ -196,7 +196,7 @@ export default function Login() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@eagerminds.com"
+                    placeholder="Enter your email"
                     required
                     autoComplete="email"
                     className="w-full pl-14 pr-6 py-3.5 sm:py-4 bg-white/[0.02] border border-white/5 rounded-[1.5rem] text-white placeholder:text-white/10 focus:bg-white focus:text-black transition-all text-sm font-bold outline-none"
@@ -207,14 +207,14 @@ export default function Login() {
               <div className="space-y-3">
                 <div className="flex justify-between items-center px-1">
                   <label className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20">
-                    Security Key
+                    Password
                   </label>
                   {isLogin && (
                     <button
                       type="button"
                       className="text-[9px] font-black uppercase tracking-widest text-white/20 hover:text-white transition-colors italic"
                     >
-                      Recovery Request
+                      Forgot Password?
                     </button>
                   )}
                 </div>
@@ -227,7 +227,7 @@ export default function Login() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
+                    placeholder="Enter your password"
                     required
                     minLength={6}
                     autoComplete={isLogin ? "current-password" : "new-password"}
