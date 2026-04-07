@@ -88,7 +88,7 @@ export default function Login() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-8 sm:mb-12 md:mb-14 mt-2 sm:mt-4 space-y-4 text-left w-full max-w-xl"
       >
-        <div className="flex flex-col items-start gap-3">
+        <div className="flex flex-col items-center gap-3 w-fit mx-auto">
           <div className="flex w-fit items-center gap-2 px-3 py-1 rounded-full border border-purple-400/20 bg-purple-500/5 text-[10px] font-black uppercase tracking-[0.3em] text-purple-300/70">
             <Fingerprint size={12} className="text-purple-400" />
             <span>Security Protocol</span>
