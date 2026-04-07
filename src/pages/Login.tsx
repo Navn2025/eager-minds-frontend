@@ -88,36 +88,38 @@ export default function Login() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-8 sm:mb-12 md:mb-14 mt-2 sm:mt-4 space-y-4 text-left w-full max-w-xl"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-purple-400/20 bg-purple-500/5 text-[10px] font-black uppercase tracking-[0.3em] text-purple-300/70">
-          <Fingerprint size={12} className="text-purple-400" />
-          <span>Security Protocol</span>
-        </div>
+        <div className="flex flex-col items-start gap-3">
+          <div className="flex w-fit items-center gap-2 px-3 py-1 rounded-full border border-purple-400/20 bg-purple-500/5 text-[10px] font-black uppercase tracking-[0.3em] text-purple-300/70">
+            <Fingerprint size={12} className="text-purple-400" />
+            <span>Security Protocol</span>
+          </div>
 
-        <div className="inline-flex rounded-full border border-white/12 bg-white/[0.03] p-1">
-          <button
-            type="button"
-            onClick={() => switchMode(true)}
-            className={cn(
-              "rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] transition-colors",
-              isLogin
-                ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white"
-                : "text-white/60 hover:text-white",
-            )}
-          >
-            Login
-          </button>
-          <button
-            type="button"
-            onClick={() => switchMode(false)}
-            className={cn(
-              "rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] transition-colors",
-              !isLogin
-                ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white"
-                : "text-white/60 hover:text-white",
-            )}
-          >
-            Register
-          </button>
+          <div className="flex w-fit rounded-full border border-white/12 bg-white/[0.03] p-1">
+            <button
+              type="button"
+              onClick={() => switchMode(true)}
+              className={cn(
+                "rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] transition-colors",
+                isLogin
+                  ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white"
+                  : "text-white/60 hover:text-white",
+              )}
+            >
+              Login
+            </button>
+            <button
+              type="button"
+              onClick={() => switchMode(false)}
+              className={cn(
+                "rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] transition-colors",
+                !isLogin
+                  ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white"
+                  : "text-white/60 hover:text-white",
+              )}
+            >
+              Register
+            </button>
+          </div>
         </div>
 
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tighter text-white">

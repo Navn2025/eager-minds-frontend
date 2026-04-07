@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Volume2,
   VolumeX,
+  Square,
   Sparkles,
   BookOpen,
   ChevronRight,
@@ -29,6 +30,8 @@ export default function WordOfTheDayPage() {
   const [loading, setLoading] = useState(true);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const speechRef = useRef<SpeechSynthesis | null>(null);
+  const preferredVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,6 +63,34 @@ export default function WordOfTheDayPage() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      return;
+    }
+
+    const synth = window.speechSynthesis;
+    speechRef.current = synth;
+
+    const selectPreferredVoice = () => {
+      const voices = synth.getVoices();
+      if (!voices.length) return;
+
+      preferredVoiceRef.current =
+        voices.find((voice) =>
+          /en-GB|en-UK|english\s*uk/i.test(`${voice.lang} ${voice.name}`),
+        ) ||
+        voices.find((voice) => /en/i.test(voice.lang)) ||
+        voices[0];
+    };
+
+    selectPreferredVoice();
+    const warmUpTimer = window.setTimeout(selectPreferredVoice, 0);
+
+    return () => {
+      window.clearTimeout(warmUpTimer);
+    };
+  }, []);
+
+  useEffect(() => {
     return () => {
       if (typeof window !== "undefined" && "speechSynthesis" in window) {
         window.speechSynthesis.cancel();
@@ -68,27 +99,36 @@ export default function WordOfTheDayPage() {
   }, []);
 
   const handleSpeak = () => {
-    if (
-      !wordData?.word ||
-      isMuted ||
-      isSpeaking ||
-      typeof window === "undefined" ||
-      !("speechSynthesis" in window)
-    ) {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
       return;
     }
 
-    const synth = window.speechSynthesis;
-    synth.cancel();
+    const synth = speechRef.current || window.speechSynthesis;
+
+    if (isSpeaking) {
+      synth.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    if (!wordData?.word || isMuted) return;
 
     const utterance = new SpeechSynthesisUtterance(wordData.word);
-    utterance.rate = 0.96;
+    utterance.rate = 1;
     utterance.pitch = 1;
     utterance.lang = "en-GB";
+    if (preferredVoiceRef.current) {
+      utterance.voice = preferredVoiceRef.current;
+    }
 
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
 
+    if (synth.speaking || synth.pending) {
+      synth.cancel();
+    }
+
+    synth.resume();
     setIsSpeaking(true);
     synth.speak(utterance);
   };
@@ -199,27 +239,33 @@ export default function WordOfTheDayPage() {
                   <div className="flex items-center gap-3">
                     <motion.button
                       whileHover={{
-                        scale: isMuted || isSpeaking ? 1 : 1.1,
+                        scale: isMuted ? 1 : 1.1,
                         rotate: isMuted || isSpeaking ? 0 : 5,
                       }}
-                      whileTap={{ scale: isMuted || isSpeaking ? 1 : 0.92 }}
+                      whileTap={{ scale: isMuted ? 1 : 0.92 }}
                       onClick={handleSpeak}
-                      disabled={isMuted || isSpeaking}
+                      disabled={isMuted}
                       className={cn(
                         "w-14 h-14 rounded-xl flex items-center justify-center transition-all",
-                        isMuted || isSpeaking
+                        isMuted
                           ? "bg-white/[0.08] text-white/40 cursor-not-allowed"
-                          : "bg-gradient-to-br from-pink-500 to-purple-600 shadow-[0_4px_20px_rgba(168,85,247,0.4)] hover:shadow-[0_6px_28px_rgba(236,72,153,0.5)]",
+                          : isSpeaking
+                            ? "bg-gradient-to-br from-rose-500 to-orange-500 shadow-[0_4px_20px_rgba(244,63,94,0.35)] hover:shadow-[0_6px_28px_rgba(249,115,22,0.4)]"
+                            : "bg-gradient-to-br from-pink-500 to-purple-600 shadow-[0_4px_20px_rgba(168,85,247,0.4)] hover:shadow-[0_6px_28px_rgba(236,72,153,0.5)]",
                       )}
                       title={
                         isMuted
                           ? "Unmute to hear pronunciation"
                           : isSpeaking
-                            ? "Speaking..."
+                            ? "Stop"
                             : "Hear pronunciation"
                       }
                     >
-                      <Volume2 size={24} className="text-white" />
+                      {isSpeaking ? (
+                        <Square size={20} className="text-white" />
+                      ) : (
+                        <Volume2 size={24} className="text-white" />
+                      )}
                     </motion.button>
 
                     <button
