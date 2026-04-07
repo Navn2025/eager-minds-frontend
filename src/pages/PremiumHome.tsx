@@ -8,7 +8,7 @@ import WordOfDay from "../components/home/WordOfDay";
 import ChallengesList from "../components/home/ChallengesList";
 import BlogGrid from "../components/home/BlogGrid";
 import Testimonials from "../components/home/Testimonials";
-import logo from "../assets/logo.png";
+import BrandLoader from "../components/ui/BrandLoader";
 
 type HomeData = {
   subjects: any[];
@@ -137,15 +137,7 @@ export default function PremiumHome() {
   ];
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <img
-          src={logo}
-          alt="Eager Minds Club logo"
-          className="h-24 w-24 object-contain animate-pulse drop-shadow-[0_0_28px_rgba(168,85,247,0.45)]"
-        />
-      </div>
-    );
+    return <BrandLoader />;
   }
 
   return (

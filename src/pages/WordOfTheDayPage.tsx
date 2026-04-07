@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Volume2, Sparkles, BookOpen, ChevronRight } from "lucide-react";
+import {
+  Volume2,
+  VolumeX,
+  Sparkles,
+  BookOpen,
+  ChevronRight,
+} from "lucide-react";
 import api from "../services/api";
+import { cn } from "../lib/utils";
 
 interface WordData {
   id?: string;
@@ -20,6 +27,8 @@ export default function WordOfTheDayPage() {
   const [pastWords, setPastWords] = useState<WordData[]>([]);
   const [activeTab, setActiveTab] = useState<"today" | "archive">("today");
   const [loading, setLoading] = useState(true);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,6 +58,55 @@ export default function WordOfTheDayPage() {
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  const handleSpeak = () => {
+    if (
+      !wordData?.word ||
+      isMuted ||
+      isSpeaking ||
+      typeof window === "undefined" ||
+      !("speechSynthesis" in window)
+    ) {
+      return;
+    }
+
+    const synth = window.speechSynthesis;
+    synth.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(wordData.word);
+    utterance.rate = 0.96;
+    utterance.pitch = 1;
+    utterance.lang = "en-GB";
+
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    setIsSpeaking(true);
+    synth.speak(utterance);
+  };
+
+  const toggleMute = () => {
+    setIsMuted((prev) => {
+      const next = !prev;
+      if (
+        next &&
+        typeof window !== "undefined" &&
+        "speechSynthesis" in window
+      ) {
+        window.speechSynthesis.cancel();
+        setIsSpeaking(false);
+      }
+      return next;
+    });
+  };
 
   const synonyms = wordData?.synonym
     ? wordData.synonym
@@ -138,30 +196,47 @@ export default function WordOfTheDayPage() {
                   <h2 className="text-6xl md:text-8xl font-black tracking-tighter text-white uppercase italic">
                     {wordData.word}
                   </h2>
-                  <motion.button
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => {
-                      const utterance = new SpeechSynthesisUtterance(
-                        wordData.word,
-                      );
-                      window.speechSynthesis.speak(utterance);
-                    }}
-                    className="w-14 h-14 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-[0_4px_20px_rgba(168,85,247,0.4)] hover:shadow-[0_6px_28px_rgba(236,72,153,0.5)] transition-all"
-                    title="Hear pronunciation"
-                  >
-                    <Volume2 size={24} className="text-white" />
-                  </motion.button>
-                </div>
+                  <div className="flex items-center gap-3">
+                    <motion.button
+                      whileHover={{
+                        scale: isMuted || isSpeaking ? 1 : 1.1,
+                        rotate: isMuted || isSpeaking ? 0 : 5,
+                      }}
+                      whileTap={{ scale: isMuted || isSpeaking ? 1 : 0.92 }}
+                      onClick={handleSpeak}
+                      disabled={isMuted || isSpeaking}
+                      className={cn(
+                        "w-14 h-14 rounded-xl flex items-center justify-center transition-all",
+                        isMuted || isSpeaking
+                          ? "bg-white/[0.08] text-white/40 cursor-not-allowed"
+                          : "bg-gradient-to-br from-pink-500 to-purple-600 shadow-[0_4px_20px_rgba(168,85,247,0.4)] hover:shadow-[0_6px_28px_rgba(236,72,153,0.5)]",
+                      )}
+                      title={
+                        isMuted
+                          ? "Unmute to hear pronunciation"
+                          : isSpeaking
+                            ? "Speaking..."
+                            : "Hear pronunciation"
+                      }
+                    >
+                      <Volume2 size={24} className="text-white" />
+                    </motion.button>
 
-                {/* Pronunciation */}
-                {wordData.pronunciation && (
-                  <div className="inline-block px-6 py-2 bg-white/[0.04] border border-white/10 rounded-xl mb-10 relative z-10">
-                    <p className="text-lg text-white/60 font-bold uppercase tracking-[0.3em]">
-                      {wordData.pronunciation}
-                    </p>
+                    <button
+                      type="button"
+                      onClick={toggleMute}
+                      className={cn(
+                        "w-12 h-12 rounded-xl border border-white/15 flex items-center justify-center transition-colors",
+                        isMuted
+                          ? "bg-white/10 text-white"
+                          : "bg-white/[0.02] text-white/70 hover:text-white hover:bg-white/[0.08]",
+                      )}
+                      title={isMuted ? "Unmute" : "Mute"}
+                    >
+                      {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                    </button>
                   </div>
-                )}
+                </div>
 
                 {/* Definition + Example Grid */}
                 <div className="grid md:grid-cols-2 gap-6 relative z-10">
@@ -271,11 +346,6 @@ export default function WordOfTheDayPage() {
                       <h3 className="text-2xl font-black text-white uppercase italic group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-pink-400 group-hover:to-purple-400 transition-all">
                         {pw.word}
                       </h3>
-                      {pw.pronunciation && (
-                        <span className="text-[10px] text-white/30 font-bold tracking-widest">
-                          {pw.pronunciation}
-                        </span>
-                      )}
                     </div>
                     <p className="text-sm text-white/50 leading-relaxed">
                       {pw.meaning}

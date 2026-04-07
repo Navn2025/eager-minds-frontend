@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { cn } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
 import SplitFullscreenMenu from "./SplitFullscreenMenu";
@@ -25,6 +25,7 @@ export default function FullscreenNavbar() {
   const [prepSubjects, setPrepSubjects] = useState<PrepSubject[]>([]);
   const [isPrepDropdownOpen, setIsPrepDropdownOpen] = useState(false);
   const { isLoggedIn, isAdmin } = useAuth();
+  const { pathname } = useLocation();
 
   const centerLinks: CenterLink[] = [
     { label: "Home", path: "/" },
@@ -42,6 +43,11 @@ export default function FullscreenNavbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const isLinkActive = (path: string) => {
+    if (path === "/") return pathname === "/";
+    return pathname === path || pathname.startsWith(`${path}/`);
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -113,9 +119,14 @@ export default function FullscreenNavbar() {
                 >
                   <Link
                     to={link.path}
-                    className="text-[9px] 2xl:text-[10px] font-bold uppercase tracking-[0.14em] text-white/50 hover:text-white/90 transition-colors duration-200 relative group whitespace-nowrap inline-flex items-center gap-1.5"
+                    className={cn(
+                      "text-[9px] 2xl:text-[10px] font-bold uppercase tracking-[0.14em] transition-colors duration-200 relative group whitespace-nowrap inline-flex items-center gap-1.5 leading-none",
+                      isLinkActive(link.path)
+                        ? "text-white"
+                        : "text-white/50 hover:text-white/90",
+                    )}
                   >
-                    {link.label}
+                    <span className="leading-none">{link.label}</span>
                     <ChevronDown
                       size={12}
                       className={cn(
@@ -124,9 +135,12 @@ export default function FullscreenNavbar() {
                       )}
                     />
                     <span
-                      className="absolute -bottom-1 left-0 w-0 h-[1.5px] rounded-full
-                      bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400
-                      transition-all duration-300 group-hover:w-full"
+                      className={cn(
+                        "absolute -bottom-1 left-0 h-[1.5px] rounded-full bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400 transition-all duration-300",
+                        isLinkActive(link.path)
+                          ? "w-full"
+                          : "w-0 group-hover:w-full",
+                      )}
                     />
                   </Link>
 
@@ -164,14 +178,22 @@ export default function FullscreenNavbar() {
                 <Link
                   key={link.label}
                   to={link.path}
-                  className="text-[9px] 2xl:text-[10px] font-bold uppercase tracking-[0.14em] text-white/50 hover:text-white/90 transition-colors duration-200 relative group whitespace-nowrap"
+                  className={cn(
+                    "text-[9px] 2xl:text-[10px] font-bold uppercase tracking-[0.14em] transition-colors duration-200 relative group whitespace-nowrap",
+                    isLinkActive(link.path)
+                      ? "text-white"
+                      : "text-white/50 hover:text-white/90",
+                  )}
                 >
                   {link.label}
                   {/* gradient underline on hover */}
                   <span
-                    className="absolute -bottom-1 left-0 w-0 h-[1.5px] rounded-full
-                    bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400
-                    transition-all duration-300 group-hover:w-full"
+                    className={cn(
+                      "absolute -bottom-1 left-0 h-[1.5px] rounded-full bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400 transition-all duration-300",
+                      isLinkActive(link.path)
+                        ? "w-full"
+                        : "w-0 group-hover:w-full",
+                    )}
                   />
                 </Link>
               ),
