@@ -1,0 +1,57 @@
+/* ===== EAGER MINDS CLUB — BRAND THEME ===== */
+:root {
+  --navbar-height: 80px;
+}
+
+/* Reset any legacy page styles that conflict with Tailwind */
+.page {
+  padding: 0;
+  background: transparent;
+  min-height: auto;
+}
+
+/*
+  Headings: use `inherit` so gradient text utilities (.text-gradient,
+  .section-title) are NOT blocked by a hardcoded white override.
+  Fallback is still near-white via --color-text-primary.
+*/
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: inherit;
+  letter-spacing: -0.02em;
+}
+
+/* Hover glow — updated to brand pink */
+.hover-glow {
+  transition: all 0.3s ease;
+}
+.hover-glow:hover {
+  text-shadow:
+    0 0 12px rgba(236, 72, 153, 0.45),
+    0 0 24px rgba(168, 85, 247, 0.25);
+}
+
+/* Keep section containers clean; no grid texture. */
+.page-container {
+  background-image: none;
+}
+
+/* Public site heading alignment: keep dashboards untouched. */
+.app-layout h1,
+.app-layout h2,
+.app-layout h3,
+.app-layout h4,
+.app-layout h5,
+.app-layout h6 {
+  text-align: left;
+}
+
+.app-layout .section-title {
+  width: 100%;
+  text-align: left;
+  margin-inline: 0;
+}
