@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { X, LogOut, LayoutDashboard, LogIn, Shield } from "lucide-react";
+import {
+  X,
+  LogOut,
+  LayoutDashboard,
+  LogIn,
+  Shield,
+  ChevronDown,
+} from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../services/api";
@@ -17,6 +24,12 @@ interface NavItem {
 
 interface NavbarImagesResponse {
   sections?: Record<string, Array<string | null>>;
+}
+
+interface PrepSubject {
+  id: string;
+  name: string;
+  slug: string;
 }
 
 function mergePreviewImages(
@@ -194,6 +207,8 @@ export default function SplitFullscreenMenu({
   onClose,
 }: SplitFullscreenMenuProps) {
   const [activeItemId, setActiveItemId] = useState<string>(navItems[0].id);
+  const [prepSubjects, setPrepSubjects] = useState<PrepSubject[]>([]);
+  const [isPrepDropdownOpen, setIsPrepDropdownOpen] = useState(false);
   const [menuFeaturedImages, setMenuFeaturedImages] = useState<
     Record<string, [string | null, string | null]>
   >({});
@@ -211,6 +226,29 @@ export default function SplitFullscreenMenu({
       })
       .catch(() => {
         if (isMounted) setMenuFeaturedImages({});
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    api
+      .get("/prep/subjects")
+      .then((res) => {
+        if (!isMounted) return;
+
+        const subjects = Array.isArray(res.data)
+          ? res.data
+          : res.data?.subjects || [];
+
+        setPrepSubjects(subjects);
+      })
+      .catch(() => {
+        if (isMounted) setPrepSubjects([]);
       });
 
     return () => {
@@ -257,6 +295,12 @@ export default function SplitFullscreenMenu({
       document.body.style.overflow = originalBodyOverflow;
       document.documentElement.style.overflow = originalHtmlOverflow;
     };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setIsPrepDropdownOpen(false);
+    }
   }, [isOpen]);
 
   return (
@@ -313,38 +357,134 @@ export default function SplitFullscreenMenu({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 + idx * 0.05, duration: 0.5 }}
                   >
-                    <Link
-                      to={item.path}
-                      onClick={onClose}
-                      onMouseEnter={() => setActiveItemId(item.id)}
-                      className={cn(
-                        "group relative flex items-center gap-4 transition-all duration-300",
-                        "text-[1.45rem] sm:text-[1.8rem] md:text-[2rem] lg:text-[2.25rem] leading-[1.05] font-bold tracking-tight uppercase",
-                        activeItem.id === item.id
-                          ? "text-white"
-                          : "text-white/45",
-                      )}
-                    >
-                      <motion.span
-                        animate={
-                          activeItem.id === item.id ? { x: 10 } : { x: 0 }
-                        }
+                    {item.id === "free-sheets" ? (
+                      <>
+                        <div className="group relative flex items-center gap-2">
+                          <Link
+                            to={item.path}
+                            onClick={onClose}
+                            onMouseEnter={() => setActiveItemId(item.id)}
+                            className={cn(
+                              "relative flex flex-1 items-center gap-4 transition-all duration-300",
+                              "text-[1.45rem] sm:text-[1.8rem] md:text-[2rem] lg:text-[2.25rem] leading-[1.05] font-bold tracking-tight uppercase",
+                              activeItem.id === item.id
+                                ? "text-white"
+                                : "text-white/45",
+                            )}
+                          >
+                            <motion.span
+                              animate={
+                                activeItem.id === item.id ? { x: 10 } : { x: 0 }
+                              }
+                              className={cn(
+                                "transition-all duration-500",
+                                activeItem.id === item.id
+                                  ? "text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400"
+                                  : "group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-pink-400 group-hover:via-purple-400 group-hover:to-sky-400",
+                              )}
+                            >
+                              {item.label}
+                            </motion.span>
+                            {activeItem.id === item.id && (
+                              <motion.div
+                                layoutId="activeIndicator"
+                                className="w-2 h-2 rounded-full bg-white/80"
+                              />
+                            )}
+                          </Link>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActiveItemId(item.id);
+                              setIsPrepDropdownOpen((prev) => !prev);
+                            }}
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.02] text-white/70 hover:text-white hover:border-white/25 transition-colors"
+                            aria-label="Toggle 11+ prep subjects"
+                            aria-expanded={
+                              isPrepDropdownOpen || activeItem.id === item.id
+                            }
+                          >
+                            <ChevronDown
+                              size={17}
+                              className={cn(
+                                "transition-transform duration-300",
+                                isPrepDropdownOpen || activeItem.id === item.id
+                                  ? "rotate-180"
+                                  : "rotate-0",
+                              )}
+                            />
+                          </button>
+                        </div>
+
+                        <AnimatePresence>
+                          {(isPrepDropdownOpen ||
+                            activeItem.id === item.id) && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: "auto" }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{
+                                duration: 0.25,
+                                ease: [0.22, 1, 0.36, 1],
+                              }}
+                              className="overflow-hidden"
+                            >
+                              <div className="ml-4 sm:ml-7 mt-2 pl-4 border-l border-white/12 flex flex-col gap-2">
+                                {prepSubjects.map((subject) => (
+                                  <Link
+                                    key={subject.id}
+                                    to={`/11-plus-prep?subject=${subject.slug}`}
+                                    onClick={onClose}
+                                    className="text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-white/55 hover:text-white transition-colors"
+                                  >
+                                    {subject.name}
+                                  </Link>
+                                ))}
+                                {prepSubjects.length === 0 && (
+                                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-white/35">
+                                    No subjects available
+                                  </span>
+                                )}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </>
+                    ) : (
+                      <Link
+                        to={item.path}
+                        onClick={onClose}
+                        onMouseEnter={() => setActiveItemId(item.id)}
                         className={cn(
-                          "transition-all duration-500",
+                          "group relative flex items-center gap-4 transition-all duration-300",
+                          "text-[1.45rem] sm:text-[1.8rem] md:text-[2rem] lg:text-[2.25rem] leading-[1.05] font-bold tracking-tight uppercase",
                           activeItem.id === item.id
-                            ? "text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400"
-                            : "group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-pink-400 group-hover:via-purple-400 group-hover:to-sky-400",
+                            ? "text-white"
+                            : "text-white/45",
                         )}
                       >
-                        {item.label}
-                      </motion.span>
-                      {activeItem.id === item.id && (
-                        <motion.div
-                          layoutId="activeIndicator"
-                          className="w-2 h-2 rounded-full bg-white/80"
-                        />
-                      )}
-                    </Link>
+                        <motion.span
+                          animate={
+                            activeItem.id === item.id ? { x: 10 } : { x: 0 }
+                          }
+                          className={cn(
+                            "transition-all duration-500",
+                            activeItem.id === item.id
+                              ? "text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400"
+                              : "group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-pink-400 group-hover:via-purple-400 group-hover:to-sky-400",
+                          )}
+                        >
+                          {item.label}
+                        </motion.span>
+                        {activeItem.id === item.id && (
+                          <motion.div
+                            layoutId="activeIndicator"
+                            className="w-2 h-2 rounded-full bg-white/80"
+                          />
+                        )}
+                      </Link>
+                    )}
                   </motion.div>
                 ))}
 

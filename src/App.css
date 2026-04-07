@@ -55,3 +55,8 @@ h6 {
   text-align: left;
   margin-inline: 0;
 }
+
+/* Keep homepage hero heading centered while other page headings stay left. */
+.app-layout .hero-section h1 {
+  text-align: center;
+}

@@ -11,8 +11,6 @@ interface WordOfDayProps {
 
 export default function WordOfDay({
   word,
-  pronunciation,
-  partOfSpeech,
   definition,
   examples,
 }: WordOfDayProps) {
@@ -47,19 +45,6 @@ export default function WordOfDay({
             >
               {word}
             </motion.h2>
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="grid grid-cols-1 sm:grid-cols-[auto_1fr] items-start gap-y-2 sm:gap-x-6 text-text-secondary font-mono text-lg sm:text-xl max-w-full"
-            >
-              <span className="text-accent/50">[{partOfSpeech}]</span>
-              <span className="leading-snug break-words [overflow-wrap:anywhere]">
-                {pronunciation}
-              </span>
-            </motion.div>
           </div>
 
           <div className="flex-1 w-full">

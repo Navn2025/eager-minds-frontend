@@ -43,7 +43,7 @@ export default function Hero({
   const [line1, line2] = splitHeadline(headline);
 
   return (
-    <section className="relative min-h-[100svh] flex flex-col items-center justify-center px-5 sm:px-6 pt-24 sm:pt-28 md:pt-32 overflow-hidden">
+    <section className="hero-section relative min-h-[100svh] flex flex-col items-center justify-center px-5 sm:px-6 pt-24 sm:pt-28 md:pt-32 overflow-hidden">
       <div className="relative z-10 max-w-5xl w-full text-center mx-auto flex flex-col items-center">
         {/* ── Headline — two-line staggered slide-up ── */}
         <div className="overflow-hidden mb-3">

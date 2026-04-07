@@ -8,52 +8,85 @@ import WordOfDay from "../components/home/WordOfDay";
 import ChallengesList from "../components/home/ChallengesList";
 import BlogGrid from "../components/home/BlogGrid";
 import Testimonials from "../components/home/Testimonials";
-import BrandLoader from "../components/ui/BrandLoader";
+import logo from "../assets/logo.png";
+
+type HomeData = {
+  subjects: any[];
+  wordOfDay: any;
+  challenges: any[];
+  blogPosts: any[];
+  testimonials: any[];
+};
+
+const EMPTY_HOME_DATA: HomeData = {
+  subjects: [],
+  wordOfDay: null,
+  challenges: [],
+  blogPosts: [],
+  testimonials: [],
+};
+
+let cachedHomeData: HomeData | null = null;
+let pendingHomeDataRequest: Promise<HomeData> | null = null;
+
+async function fetchHomeData(): Promise<HomeData> {
+  if (cachedHomeData) return cachedHomeData;
+  if (pendingHomeDataRequest) return pendingHomeDataRequest;
+
+  pendingHomeDataRequest = Promise.all([
+    api.get("/prep/subjects"),
+    api.get("/prep/word-of-the-day"),
+    api.get("/competitions"),
+    api.get("/blog"),
+    api.get("/testimonials"),
+  ])
+    .then(([subjectsRes, wordRes, challengesRes, blogRes, testimonialsRes]) => {
+      const nextData: HomeData = {
+        subjects: subjectsRes.data,
+        wordOfDay: wordRes.data,
+        challenges: challengesRes.data,
+        blogPosts: blogRes.data.posts,
+        testimonials: testimonialsRes.data,
+      };
+
+      cachedHomeData = nextData;
+      return nextData;
+    })
+    .finally(() => {
+      pendingHomeDataRequest = null;
+    });
+
+  return pendingHomeDataRequest;
+}
 
 export default function PremiumHome() {
-  const [data, setData] = useState<{
-    subjects: any[];
-    wordOfDay: any;
-    challenges: any[];
-    blogPosts: any[];
-    testimonials: any[];
-  }>({
-    subjects: [],
-    wordOfDay: null,
-    challenges: [],
-    blogPosts: [],
-    testimonials: [],
-  });
-
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<HomeData>(cachedHomeData || EMPTY_HOME_DATA);
+  const [loading, setLoading] = useState(!cachedHomeData);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [subjectsRes, wordRes, challengesRes, blogRes, testimonialsRes] =
-          await Promise.all([
-            api.get("/prep/subjects"),
-            api.get("/prep/word-of-the-day"),
-            api.get("/competitions"),
-            api.get("/blog"),
-            api.get("/testimonials"),
-          ]);
+    let isMounted = true;
+    const shouldShowLoader = !cachedHomeData;
 
-        setData({
-          subjects: subjectsRes.data,
-          wordOfDay: wordRes.data,
-          challenges: challengesRes.data,
-          blogPosts: blogRes.data.posts,
-          testimonials: testimonialsRes.data,
-        });
+    const loadData = async () => {
+      try {
+        const nextData = await fetchHomeData();
+        if (isMounted) {
+          setData(nextData);
+        }
       } catch (error) {
         console.error("Error fetching landing page data:", error);
       } finally {
-        setLoading(false);
+        if (isMounted && shouldShowLoader) {
+          setLoading(false);
+        }
       }
     };
 
-    fetchData();
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const heroConfig = {
@@ -105,7 +138,13 @@ export default function PremiumHome() {
 
   if (loading) {
     return (
-      <BrandLoader message="Preparing the club experience" className="pt-24" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <img
+          src={logo}
+          alt="Eager Minds Club logo"
+          className="h-24 w-24 object-contain animate-pulse drop-shadow-[0_0_28px_rgba(168,85,247,0.45)]"
+        />
+      </div>
     );
   }
 
